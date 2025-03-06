@@ -226,9 +226,11 @@ namespace SPSS.Services.AuthService
                 throw new Exception("Invalid Id Token");
 
             var user = await _userManager.FindByEmailAsync(payload.Email);
+            bool isNewUser = false;
 
             if (user == null)
             {
+                isNewUser = true;
                 user = new AppUser
                 {
                     Email = payload.Email,
@@ -240,7 +242,7 @@ namespace SPSS.Services.AuthService
                 if (!result.Succeeded)
                     throw new Exception("Failed to create user");
 
-                var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                await _userManager.AddToRoleAsync(user, "User");
 
                 var info = new UserLoginInfo("Google", payload.Subject, "Google");
                 var loginResult = await _userManager.AddLoginAsync(user, info);
@@ -248,13 +250,16 @@ namespace SPSS.Services.AuthService
                     throw new Exception("Failed to add external login");
             }
 
+            bool hasPassword = await _userManager.HasPasswordAsync(user);
             var refreshToken = await GenerateAndSaveRefreshToken(user);
 
             return new TokenResponseDto
             {
                 EmailConfirmed = user.EmailConfirmed,
                 AccessToken = CreateToken(user),
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                HasPassword = hasPassword,
+                IsNewUser = isNewUser
             };
         }
 
@@ -275,6 +280,9 @@ namespace SPSS.Services.AuthService
             if (user == null)
                 throw new Exception("User not found");
 
+            if (await _userManager.HasPasswordAsync(user))
+                throw new Exception("Password already set");
+
             if (request.Password != request.ConfirmPassword)
                 throw new Exception("Passwords do not match");
 
@@ -288,7 +296,8 @@ namespace SPSS.Services.AuthService
             {
                 EmailConfirmed = user.EmailConfirmed,
                 AccessToken = CreateToken(user),
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                HasPassword = true
             };
         }
 
