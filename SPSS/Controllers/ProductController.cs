@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SPSS.Dto;
 using SPSS.Entities;
 using SPSS.Services;
 using AutoMapper;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using SPSS.Dto.Request;
@@ -13,7 +13,7 @@ using SPSS.Services.ProductService;
 
 namespace SPSS.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("products")]
     [ApiController]
     public class ProductsController(IFirebaseStorageService firebaseStorageService, IMapper mapper, IProductService productService) : ControllerBase
     {
@@ -36,7 +36,6 @@ namespace SPSS.Controllers
             var productResponse = mapper.Map<ProductResponse>(product);
             return Ok(productResponse);
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetProductList()
