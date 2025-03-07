@@ -12,10 +12,6 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["SPSS/SPSS.API.csproj", "SPSS/"]
-COPY ["SPSS.Services/SPSS.Service.csproj", "SPSS.Services/"]
-COPY ["SPSS.Repository/SPSS.Repository.csproj", "SPSS.Repository/"]
-RUN dotnet restore "./SPSS/SPSS.API.csproj"
 COPY . .
 WORKDIR "/src/SPSS"
 RUN dotnet build "./SPSS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
