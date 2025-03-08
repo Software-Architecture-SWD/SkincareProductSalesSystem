@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using SPSS.Dto.Account;
 using Microsoft.AspNetCore.Http;
 
-namespace SPSS.Services
+namespace SPSS.Service.Services.EmailService
 {
     public interface IEmailService
     {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Dto;
 using SPSS.Dto.Account;
-using SPSS.Services.AuthService;
+using SPSS.Service.Services.AuthService;
 using System.Security.Claims;
 
 namespace SPSS.Controllers

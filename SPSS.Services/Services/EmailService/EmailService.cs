@@ -13,7 +13,7 @@ using System.Linq;
 using OtpNet;
 using System.Collections.Concurrent;
 
-namespace SPSS.Services
+namespace SPSS.Service.Services.EmailService
 {
     public class EmailService(EmailConfiguration _emailConfig, UserManager<AppUser> _userManager, ConcurrentDictionary<string, OtpEntry> _otpStorage) : IEmailService
     {

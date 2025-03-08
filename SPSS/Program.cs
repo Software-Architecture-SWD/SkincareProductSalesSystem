@@ -5,16 +5,16 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SPSS.Data;
 using SPSS.Entities;
-using SPSS.Services.AuthService;
-using SPSS.Services;
 using System.Text;
 using Microsoft.Extensions.Options;
 using SPSS.Dto.Account;
 using System.Collections.Concurrent;
-using SPSS.Services.FirebaseStorageService;
 using SPSS.Mapper;
-using SPSS.Services.ProductService;
-using SPSS.Repositories.GenericRepository;
+using SPSS.Repository.Repositories.GenericRepository;
+using SPSS.Service.Services.AuthService;
+using SPSS.Service.Services.FirebaseStorageService;
+using SPSS.Service.Services.EmailService;
+using SPSS.Service.Services.ProductService;
 
 namespace SPSS
 {

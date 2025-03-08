@@ -3,7 +3,7 @@ using SPSS.Dto;
 using SPSS.Dto.Account;
 using SPSS.Entities;
 
-namespace SPSS.Services.AuthService
+namespace SPSS.Service.Services.AuthService
 {
     public interface IAuthService
     {
