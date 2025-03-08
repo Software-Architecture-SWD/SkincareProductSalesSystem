@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Dto;
 using SPSS.Dto.Account;
@@ -8,7 +7,7 @@ using System.Security.Claims;
 
 namespace SPSS.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("auth")]
     [ApiController]
     public class AuthController(IAuthService authService) : ControllerBase
     {
@@ -28,7 +27,7 @@ namespace SPSS.Controllers
                 {
                     UserId = user.Id,
                     Username = user.UserName,
-                    EmailConfirmed = user.EmailConfirmed, 
+                    EmailConfirmed = user.EmailConfirmed,
                     Message = "Register Successfully!"
                 });
             }
@@ -54,7 +53,7 @@ namespace SPSS.Controllers
                 {
                     result.AccessToken,
                     result.RefreshToken,
-                    EmailConfirmed = result.EmailConfirmed 
+                    EmailConfirmed = result.EmailConfirmed
                 });
             }
             catch (Exception ex)
@@ -63,7 +62,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("google-login")]
+        [HttpPost("google/login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleUserLoginDTO googleLoginDTO)
         {
             try
@@ -77,7 +76,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("google-setPassword")]
+        [HttpPost("google/set-password")]
         public async Task<IActionResult> GoogleSetPassword([FromBody] SetPasswordDTO setPasswordDTO, [FromHeader(Name = "Authorization")] string authorizationHeader)
         {
             try
@@ -88,7 +87,6 @@ namespace SPSS.Controllers
                 var token = authorizationHeader.Substring("Bearer ".Length).Trim();
                 var response = await authService.GoogleSetPasswordAsync(setPasswordDTO, token);
 
-
                 return Ok(response);
             }
             catch (Exception ex)
@@ -96,7 +94,6 @@ namespace SPSS.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
 
         [Authorize]
         [HttpPost("logout")]
@@ -117,7 +114,8 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("change-password")]
+        [Authorize]
+        [HttpPut("password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
         {
             if (string.IsNullOrEmpty(request.CurrentPassword) ||
@@ -142,7 +140,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("refresh-tokens")]
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokenRequestDto request)
         {
             if (string.IsNullOrEmpty(request.UserId.ToString()) || string.IsNullOrEmpty(request.RefreshToken))
@@ -162,7 +160,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPut("assign-role")]
+        [HttpPut("roles/assign")]
         public async Task<IActionResult> AssignRole([FromBody] SetRoleRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Role))
@@ -179,7 +177,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("add-role")]
+        [HttpPost("roles")]
         public async Task<IActionResult> AddRole([FromBody] string roleName)
         {
             if (string.IsNullOrWhiteSpace(roleName))
@@ -197,32 +195,31 @@ namespace SPSS.Controllers
         }
 
         [Authorize]
-        [HttpGet("authenticated")]
+        [HttpGet("check-auth")]
         public IActionResult AuthenticatedOnlyEndpoint()
         {
             return Ok(new { Message = "You are authenticated!" });
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpGet("admin-only")]
+        [HttpGet("check-admin")]
         public IActionResult AdminOnlyEndpoint()
         {
             return Ok(new { Message = "You are an admin!" });
         }
 
-        [HttpPost("forgot-password")]
+        [HttpPost("password/forgot")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto request)
         {
             var result = await authService.ForgotPassword(request);
             return Ok(new { message = result });
         }
 
-        [HttpPost("reset-password")]
+        [HttpPost("password/reset")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
         {
             var result = await authService.ResetPassword(request);
             return Ok(new { message = result });
         }
-
     }
 }
