@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SPSS.Data;
 
-namespace SPSS.Repositories.GenericRepository
+namespace SPSS.Repository.Repositories.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
@@ -32,7 +32,7 @@ namespace SPSS.Repositories.GenericRepository
 
         public async Task DeleteAsync(T entity)
         {
-           _dbSet.Remove(entity);
+            _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
     }

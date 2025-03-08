@@ -7,12 +7,13 @@ using SPSS.Data;
 using SPSS.Dto;
 using SPSS.Dto.Account;
 using SPSS.Entities;
+using SPSS.Service.Services.EmailService;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SPSS.Services.AuthService
+namespace SPSS.Service.Services.AuthService
 {
     public class AuthService(UserManager<AppUser> _userManager, SignInManager<AppUser> _signInManager, RoleManager<IdentityRole> _roleManager, IConfiguration _configuration, IEmailService _emailService) : IAuthService
     {

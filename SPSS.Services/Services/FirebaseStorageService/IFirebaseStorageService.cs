@@ -1,4 +1,4 @@
-﻿namespace SPSS.Services.FirebaseStorageService
+﻿namespace SPSS.Service.Services.FirebaseStorageService
 {
     public interface IFirebaseStorageService
     {

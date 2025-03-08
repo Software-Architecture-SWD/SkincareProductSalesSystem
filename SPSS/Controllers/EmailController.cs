@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using SPSS.Services;
 using SPSS.Dto.Account;
 using System;
+using SPSS.Service.Services.EmailService;
 
 namespace SPSS.Controllers
 {

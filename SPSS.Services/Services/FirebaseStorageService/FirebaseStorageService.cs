@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SPSS.Services.FirebaseStorageService
+namespace SPSS.Service.Services.FirebaseStorageService
 {
     public class FirebaseStorageService : IFirebaseStorageService
     {

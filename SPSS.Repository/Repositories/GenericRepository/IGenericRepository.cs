@@ -1,4 +1,4 @@
-﻿namespace SPSS.Repositories.GenericRepository
+﻿namespace SPSS.Repository.Repositories.GenericRepository
 {
     public interface IGenericRepository<T> where T : class
     {

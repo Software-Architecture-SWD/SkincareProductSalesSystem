@@ -1,64 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SPSS.Dto;
 using SPSS.Entities;
-using SPSS.Services;
 using AutoMapper;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using SPSS.Dto.Request;
 using SPSS.Dto.Response;
-using SPSS.Services.FirebaseStorageService;
-using SPSS.Services.ProductService;
+using SPSS.Service.Services.FirebaseStorageService;
+using SPSS.Service.Services.ProductService;
 
 namespace SPSS.Controllers
 {
     [Route("products")]
     [ApiController]
-    public class ProductsController(IFirebaseStorageService firebaseStorageService, IMapper mapper, IProductService productService) : ControllerBase
+    public class ProductsController(IFirebaseStorageService _firebaseStorageService, IMapper _mapper, IProductService _productService) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest)
         {
-            var product = mapper.Map<Product>(productRequest);
-
-            if (productRequest.ImageFile != null)
+            try
             {
-                using (var stream = productRequest.ImageFile.OpenReadStream())
+                var product = _mapper.Map<Product>(productRequest);
+
+                if (productRequest.ImageFile != null)
                 {
-                    var fileName = $"{Guid.NewGuid()}_{productRequest.ImageFile.FileName}";
-                    product.ImageUrl = await firebaseStorageService.UploadImageAsync(stream, fileName);
+                    using (var stream = productRequest.ImageFile.OpenReadStream())
+                    {
+                        var fileName = $"{Guid.NewGuid()}_{productRequest.ImageFile.FileName}";
+                        product.ImageUrl = await _firebaseStorageService.UploadImageAsync(stream, fileName);
+                    }
                 }
+
+                await _productService.AddAsync(product);
+                var productResponse = _mapper.Map<ProductResponse>(product);
+                return Ok(productResponse);
             }
-
-            await productService.AddAsync(product);
-
-            var productResponse = mapper.Map<ProductResponse>(product);
-            return Ok(productResponse);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the product.", error = ex.Message });
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetProductList()
         {
-            var listProduct = await productService.GetAllAsync();
-            if (listProduct == null)
+            try
             {
-                return NotFound();
+                var listProduct = await _productService.GetAllAsync();
+                if (listProduct == null)
+                {
+                    return NotFound(new { message = "No products found." });
+                }
+                return Ok(listProduct);
             }
-            return Ok(listProduct);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving products.", error = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
-            var product = await productService.GetByIdAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
-            }
+                var product = await _productService.GetByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = "Product not found." });
+                }
 
-            var productResponse = mapper.Map<ProductResponse>(product);
-            return Ok(productResponse);
+                var productResponse = _mapper.Map<ProductResponse>(product);
+                return Ok(productResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
+            }
         }
     }
 }
