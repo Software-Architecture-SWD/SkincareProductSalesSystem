@@ -1,17 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using SPSS.Services;
-using SPSS.Entities;
 using SPSS.Dto.Account;
-using System.Collections.Generic;
 using System;
-using System.Linq;
 
 namespace SPSS.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("email")]
     [ApiController]
     public class EmailController : ControllerBase
     {
@@ -22,7 +18,7 @@ namespace SPSS.Controllers
             _emailService = emailService;
         }
 
-        [HttpGet("SendOTP")]
+        [HttpPost("otp/send")]
         public async Task<IActionResult> SendOTP()
         {
             try
@@ -36,7 +32,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpGet("SendEmail")]
+        [HttpPost("send")]
         public async Task<IActionResult> SendEmail(string userId, string senderId, string content)
         {
             try
@@ -50,7 +46,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("VerifyOTP")]
+        [HttpPost("otp/verify")]
         public async Task<IActionResult> VerifyOTP([FromBody] OTPVerificationRequest request)
         {
             try
