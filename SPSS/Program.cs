@@ -15,6 +15,8 @@ using SPSS.Service.Services.AuthService;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.EmailService;
 using SPSS.Service.Services.ProductService;
+using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.UnitOfWork;
 
 namespace SPSS
 {
@@ -101,11 +103,7 @@ namespace SPSS
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
-            builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            builder.Services.AddScoped<IProductService, ProductService>();
-          
+            builder.Services.AddApplicationServices();
 
 
             builder.Services.AddCors(options =>
@@ -125,9 +123,6 @@ namespace SPSS
             builder.Services.AddSingleton(emailConfig);
             builder.Services.AddSingleton(new ConcurrentDictionary<string, OtpEntry>());
             builder.Services.AddTransient<IEmailService, EmailService>();
-
-
-
 
             var app = builder.Build();
 
