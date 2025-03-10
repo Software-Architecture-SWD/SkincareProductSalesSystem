@@ -19,6 +19,8 @@ using SPSS.Service.Services.VNPayService;
 using SPSS.Repository.UnitOfWork;
 using VNPAY.NET;
 using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.Repositories.QuestionRepository;
+using SPSS.Service.Services.QuestionService;
 
 namespace SPSS
 {
@@ -110,6 +112,9 @@ namespace SPSS
             builder.Services.AddScoped<IVnpay, Vnpay>();
             builder.Services.AddScoped<IVNPayService, VNPayService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
 
 
 

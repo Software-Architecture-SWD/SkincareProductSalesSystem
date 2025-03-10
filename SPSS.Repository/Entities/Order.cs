@@ -19,6 +19,8 @@ namespace SPSS.Entities
         [Required]
         public string Status { get; set; } = string.Empty;
 
+        public bool isDelete { get; set; } = false;
+
         [Required]
         public decimal TotalAmount { get; set; }
 

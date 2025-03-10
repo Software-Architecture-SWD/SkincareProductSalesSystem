@@ -11,8 +11,7 @@ namespace SPSS.Entities
         public string CategoryName { get; set; } = string.Empty;
 
         public string? Description { get; set; }
-
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

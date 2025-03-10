@@ -2,6 +2,8 @@
 using SPSS.Dto.Request;
 using SPSS.Dto.Response;
 using SPSS.Entities;
+using SPSS.Service.Dto.Request;
+using SPSS.Service.Dto.Response;
 
 namespace SPSS.Mapper
 {
@@ -11,6 +13,8 @@ namespace SPSS.Mapper
         {
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>();
+            CreateMap<Question, QuestionResponse>();
+            CreateMap<QuestionRequest, Question>();
         }
     }
 }

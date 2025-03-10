@@ -9,8 +9,6 @@ namespace SPSS.Entities
 
         [Required]
         public string BlogType { get; set; } = string.Empty;
-
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
     }
 }

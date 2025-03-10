@@ -22,6 +22,7 @@ namespace SPSS.Entities
         [ForeignKey("AddressType")]
         public int AddressTypeId { get; set; }
         public virtual AddressType? AddressType { get; set; }
+        public bool isDelete { get; set; } = false;
         public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 
     }
