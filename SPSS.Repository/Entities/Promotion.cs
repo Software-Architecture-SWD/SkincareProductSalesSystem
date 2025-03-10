@@ -31,5 +31,7 @@ namespace SPSS.Entities
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool isDelete { get; set; } = false;
     }
 }

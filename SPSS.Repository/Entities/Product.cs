@@ -30,9 +30,7 @@ namespace SPSS.Entities
         public string? Ingredients { get; set; }
         public string? UsageInstructions { get; set; }
         public string? Benefits { get; set; }
-
-        [Required]
-        public string Status { get; set; } = string.Empty;
+        public bool isDelete { get; set; } = false;
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<ProductCapicity> ProductCapicities { get; set; } = new List<ProductCapicity>();

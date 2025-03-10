@@ -11,9 +11,7 @@ namespace SPSS.Entities
         public string Name { get; set; } = string.Empty;
 
         public string? Description { get; set; }
-
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
 
         public virtual Result? Result { get; set; }
         public virtual ICollection<ProductSkinType> ProductSkinTypes { get; set; } = new List<ProductSkinType>();

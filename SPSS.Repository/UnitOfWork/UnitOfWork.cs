@@ -1,5 +1,6 @@
 ﻿using SPSS.Data;
 using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.Repositories.QuestionRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace SPSS.Repository.UnitOfWork
 {
-    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository) : IUnitOfWork
+    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository) : IUnitOfWork
     {
         public IProductRepository Products  {get;}
-
+        public IQuestionRepository Questions { get; }
 
         public async Task<int> CompleteAsync()
         {

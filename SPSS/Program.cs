@@ -17,6 +17,8 @@ using SPSS.Service.Services.EmailService;
 using SPSS.Service.Services.ProductService;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.UnitOfWork;
+using SPSS.Repository.Repositories.QuestionRepository;
+using SPSS.Service.Services.QuestionService;
 
 namespace SPSS
 {
@@ -103,6 +105,11 @@ namespace SPSS
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
             builder.Services.AddApplicationServices();
 
 

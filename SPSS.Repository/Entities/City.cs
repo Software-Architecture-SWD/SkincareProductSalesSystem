@@ -10,5 +10,6 @@ namespace SPSS.Entities
         [Required]
         [MaxLength(25)]
         public string Name { get; set; } = string.Empty;
+        public bool isDelete { get; set; } = false;
     }
 }

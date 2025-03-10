@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SPSS.Entities;
+using SPSS.Repository.Entities;
 using System.Reflection.Emit;
 
 namespace SPSS.Data
@@ -38,8 +39,8 @@ namespace SPSS.Data
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<MessageStatus> MessageStatuses { get; set; }
-
-
+        public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<BookingInfo> BookingInfos { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -253,6 +254,30 @@ namespace SPSS.Data
             builder.Entity<Routines>()
                 .Property(r => r.Price)
                 .HasPrecision(18, 2);
+
+            builder.Entity<Feedback>()
+                .HasOne(f => f.AppUser)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Feedback>()
+                .HasOne(f => f.Product)
+                .WithMany()
+                .HasForeignKey(f => f.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<BookingInfo>()
+                .HasOne(b => b.Customer)
+                .WithMany()
+                .HasForeignKey(b => b.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict); // Tránh xóa nhầm user
+
+            builder.Entity<BookingInfo>()
+                .HasOne(b => b.Expert)
+                .WithMany()
+                .HasForeignKey(b => b.ExpertId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

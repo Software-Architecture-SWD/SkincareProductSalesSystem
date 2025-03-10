@@ -1,4 +1,5 @@
 ﻿using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.Repositories.QuestionRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace SPSS.Repository.UnitOfWork
     public interface IUnitOfWork : IDisposable
     {
         IProductRepository Products { get; }
+        IQuestionRepository Questions { get; }
         Task<int> CompleteAsync();
     }
 }

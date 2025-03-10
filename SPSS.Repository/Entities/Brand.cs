@@ -14,7 +14,6 @@ namespace SPSS.Entities
 
         public string? Country { get; set; }
 
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
     }
 }
