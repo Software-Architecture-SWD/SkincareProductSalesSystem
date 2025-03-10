@@ -24,7 +24,9 @@ namespace SPSS.Entities
         [Required]
         public int Status { get; set; }
 
-        public string? Image { get; set; }  
+        public string? Image { get; set; }
+
+        public bool isDelete { get; set; } = false;
 
         // Navigation properties
         public virtual AppUser? AppUser { get; set; }

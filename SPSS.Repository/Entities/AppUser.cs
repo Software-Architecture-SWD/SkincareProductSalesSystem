@@ -12,6 +12,8 @@ namespace SPSS.Entities
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public Cart? Cart { get; set; }
 
+        public bool isDelete { get; set; } = false;
+
         public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 
         // Quan hệ với bảng Conversation

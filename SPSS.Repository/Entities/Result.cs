@@ -16,6 +16,7 @@ namespace SPSS.Entities
 
         [ForeignKey("SkinType")]
         public int SkinTypeId { get; set; }
+        public bool isDelete { get; set; } = false;
 
         // Navigation property
         public virtual SkinType? SkinType { get; set; }

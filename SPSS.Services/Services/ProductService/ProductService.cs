@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SPSS.Entities;
+using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.UnitOfWork;
 using SPSS.Service.Services.ProductService;
 

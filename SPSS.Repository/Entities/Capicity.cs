@@ -12,9 +12,7 @@ namespace SPSS.Entities
 
         [Required]
         public string Unit { get; set; } = string.Empty;
-
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
         public ICollection<ProductCapicity> ProductCapicities { get; set; } = new List<ProductCapicity>();
     }
 }

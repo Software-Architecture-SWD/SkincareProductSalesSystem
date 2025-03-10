@@ -17,6 +17,7 @@ namespace SPSS.Entities
 
         [Required]
         public int Point { get; set; }
+        public bool isDelete { get; set; } = false;
 
         // Navigation property
         public virtual Question? Question { get; set; }

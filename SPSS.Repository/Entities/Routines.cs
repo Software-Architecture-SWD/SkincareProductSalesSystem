@@ -22,8 +22,7 @@ namespace SPSS.Entities
         [Required]
         public int Frequency { get; set; } // How often the routine should be followed
 
-        [Required]
-        public int Status { get; set; }
+        public bool isDelete { get; set; } = false;
 
         // Foreign key to SkinType
         [ForeignKey("SkinType")]
