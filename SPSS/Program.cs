@@ -15,8 +15,10 @@ using SPSS.Service.Services.AuthService;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.EmailService;
 using SPSS.Service.Services.ProductService;
-using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Service.Services.VNPayService;
 using SPSS.Repository.UnitOfWork;
+using VNPAY.NET;
+using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using SPSS.Service.Services.QuestionService;
 
@@ -105,12 +107,15 @@ namespace SPSS
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
             builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IVnpay, Vnpay>();
+            builder.Services.AddScoped<IVNPayService, VNPayService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
             builder.Services.AddScoped<IQuestionService, QuestionService>();
-            builder.Services.AddApplicationServices();
+
 
 
             builder.Services.AddCors(options =>
@@ -130,6 +135,9 @@ namespace SPSS
             builder.Services.AddSingleton(emailConfig);
             builder.Services.AddSingleton(new ConcurrentDictionary<string, OtpEntry>());
             builder.Services.AddTransient<IEmailService, EmailService>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+
 
             var app = builder.Build();
 
