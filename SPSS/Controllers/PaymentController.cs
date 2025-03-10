@@ -39,7 +39,7 @@ namespace SPSS.API.Controllers
 
                 if (paymentResult.IsCompleted)
                 {
-                    return Ok("Thanh toán thành công");
+                    return Ok(paymentResult);
                 }
 
                 return BadRequest("Thanh toán thất bại");

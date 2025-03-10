@@ -11,8 +11,8 @@ namespace SPSS.Repository.UnitOfWork
 {
     public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository) : IUnitOfWork
     {
-        public IProductRepository Products  {get;}
-        public IQuestionRepository Questions { get; }
+        public IProductRepository Products { get; } = _productRepository;
+        public IQuestionRepository Questions { get; } = _questionRepository;
 
         public async Task<int> CompleteAsync()
         {
