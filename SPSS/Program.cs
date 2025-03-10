@@ -106,15 +106,7 @@ namespace SPSS
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-            builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
-            builder.Services.AddScoped<IAuthService, AuthService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IVnpay, Vnpay>();
-            builder.Services.AddScoped<IVNPayService, VNPayService>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
-            builder.Services.AddScoped<IQuestionService, QuestionService>();
+            
 
 
 
@@ -135,7 +127,8 @@ namespace SPSS
             builder.Services.AddSingleton(emailConfig);
             builder.Services.AddSingleton(new ConcurrentDictionary<string, OtpEntry>());
             builder.Services.AddTransient<IEmailService, EmailService>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddApplicationServices();
+            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 
 
