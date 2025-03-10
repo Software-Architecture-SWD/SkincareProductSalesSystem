@@ -828,6 +828,10 @@ namespace SPSS.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("PromotionId");
 
                     b.ToTable("Products");
@@ -1142,6 +1146,11 @@ namespace SPSS.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<DateTime>("Created_at")
                         .HasColumnType("datetime2");
 
@@ -1443,9 +1452,25 @@ namespace SPSS.Repository.Migrations
 
             modelBuilder.Entity("SPSS.Entities.Product", b =>
                 {
+                    b.HasOne("SPSS.Entities.Brand", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SPSS.Entities.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SPSS.Entities.Promotion", "Promotion")
                         .WithMany()
                         .HasForeignKey("PromotionId");
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Category");
 
                     b.Navigation("Promotion");
                 });
@@ -1613,6 +1638,11 @@ namespace SPSS.Repository.Migrations
                     b.Navigation("UserAddresses");
                 });
 
+            modelBuilder.Entity("SPSS.Entities.Brand", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("SPSS.Entities.Capicity", b =>
                 {
                     b.Navigation("ProductCapicities");
@@ -1623,6 +1653,11 @@ namespace SPSS.Repository.Migrations
                     b.Navigation("CartItems");
 
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("SPSS.Entities.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("SPSS.Entities.Conversation", b =>

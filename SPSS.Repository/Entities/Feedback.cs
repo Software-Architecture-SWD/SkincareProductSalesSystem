@@ -26,6 +26,9 @@ namespace SPSS.Repository.Entities
         [Range(1, 5)]
         public int Rating { get; set; }
 
+        [MaxLength(250)]
+        public string Comment { get; set; } = string.Empty;
+
         [Required]
         public DateTime Created_at { get; set; } = DateTime.UtcNow;
 

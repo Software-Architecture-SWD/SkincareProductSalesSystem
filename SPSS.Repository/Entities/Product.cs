@@ -10,9 +10,11 @@ namespace SPSS.Entities
 
         [ForeignKey("Brand")]
         public int BrandId { get; set; }
+        public Brand? Brand { get; set; }     
 
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
+        public Category? Category { get; set; }
 
         [ForeignKey("Promotion")]
         public int? PromotionId { get; set; }

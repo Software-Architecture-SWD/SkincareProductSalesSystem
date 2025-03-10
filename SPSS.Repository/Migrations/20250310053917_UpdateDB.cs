@@ -483,6 +483,18 @@ namespace SPSS.Repository.Migrations
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Products_Brands_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Products_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Products_Promotions_PromotionId",
                         column: x => x.PromotionId,
                         principalTable: "Promotions",
@@ -689,6 +701,7 @@ namespace SPSS.Repository.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Created_at = table.Column<DateTime>(type: "datetime2", nullable: false),
                     isDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -1080,6 +1093,16 @@ namespace SPSS.Repository.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Products_BrandId",
+                table: "Products",
+                column: "BrandId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CategoryId",
+                table: "Products",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_PromotionId",
                 table: "Products",
                 column: "PromotionId");
@@ -1160,13 +1183,7 @@ namespace SPSS.Repository.Migrations
                 name: "BookingInfos");
 
             migrationBuilder.DropTable(
-                name: "Brands");
-
-            migrationBuilder.DropTable(
                 name: "CartItems");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
@@ -1233,6 +1250,12 @@ namespace SPSS.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "Brands");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Promotions");

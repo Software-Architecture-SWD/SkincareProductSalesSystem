@@ -12,5 +12,6 @@ namespace SPSS.Entities
 
         public string? Description { get; set; }
         public bool isDelete { get; set; } = false;
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
