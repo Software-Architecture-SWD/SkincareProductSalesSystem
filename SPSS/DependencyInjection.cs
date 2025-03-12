@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SPSS.Dto.Account;
+using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.GenericRepository;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using SPSS.Repository.UnitOfWork;
 using SPSS.Service.Services.AuthService;
 using SPSS.Service.Services.EmailService;
+using SPSS.Service.Services.FeedbackService;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
 using SPSS.Service.Services.QuestionService;
@@ -40,6 +42,8 @@ namespace SPSS
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            services.AddScoped<IFeedbackService, FeedbackService>();
 
             return services;
         }
