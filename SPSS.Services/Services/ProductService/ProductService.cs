@@ -57,7 +57,7 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
             }
 
-            return product;
+            return product; 
         }
         catch (Exception ex)
         {
