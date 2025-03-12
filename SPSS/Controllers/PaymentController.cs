@@ -10,7 +10,7 @@ namespace SPSS.API.Controllers
     [ApiController]
     public class PaymentController(IVNPayService _vnPayService) : ControllerBase
     {
-        [HttpGet("createPaymentUrl")]
+        [HttpGet]
         public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description)
         {
             try
@@ -25,17 +25,17 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpGet("IpnAction")]
+        [HttpGet("result")]
         public async Task<ActionResult> IpnAction()
         {
             if (!Request.QueryString.HasValue)
             {
-                return NotFound("Không tìm thấy thông tin thanh toán.");
+                return  NotFound("Không tìm thấy thông tin thanh toán.");
             }
 
             try
             {
-                var paymentResult = _vnPayService.ProcessIpnAction(Request.Query);
+                var paymentResult =  _vnPayService.ProcessIpnAction(Request.Query);
 
                 if (paymentResult.IsCompleted)
                 {
@@ -50,7 +50,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpGet("callback")]
+        [HttpGet("results")]
         public async Task <ActionResult<string>> Callback()
         {
 
