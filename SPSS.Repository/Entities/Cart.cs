@@ -12,9 +12,6 @@ namespace SPSS.Entities
         public string UserId { get; set; } = string.Empty;
 
         [Required]
-        public string Status { get; set; } = string.Empty;
-
-        [Required]
         public decimal TotalAmount { get; set; }
 
         [Required]
