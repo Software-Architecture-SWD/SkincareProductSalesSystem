@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SPSS.Dto.Account;
+using SPSS.Repositories;
 using SPSS.Repository.Repositories.GenericRepository;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
@@ -10,6 +11,7 @@ using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
 using SPSS.Service.Services.QuestionService;
 using SPSS.Service.Services.VNPayService;
+using SPSS.Services;
 using System.Collections.Concurrent;
 using VNPAY.NET;
 
@@ -21,6 +23,9 @@ namespace SPSS
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            //FireBase
+            services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
+
             // UIT
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -30,16 +35,18 @@ namespace SPSS
             // Product
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IProductService, ProductService>();
+
+            //VNPay
             services.AddScoped<IVnpay, Vnpay>();
             services.AddScoped<IVNPayService, VNPayService>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IProductRepository, ProductRepository>();
+
+            //Question
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IQuestionService, QuestionService>();
-            services.AddScoped<IProductRepository, ProductRepository>();
+
+            //Cart
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<ICartService, CartService>();
 
             return services;
         }
