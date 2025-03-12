@@ -18,6 +18,9 @@ namespace SPSS.Mapper
             CreateMap<QuestionRequest, Question>();
             CreateMap<Feedback, FeedbackResponse>();
             CreateMap<FeedbackRequest, Feedback>();
+            CreateMap<Product, ProductResponse>()
+           .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand.BrandName))  
+           .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName));     
         }
     }
 }

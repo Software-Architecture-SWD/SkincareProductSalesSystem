@@ -1,4 +1,7 @@
-﻿using SPSS.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using SPSS.Dto.Request;
+using SPSS.Dto.Response;
+using SPSS.Entities;
 
 namespace SPSS.Service.Services.ProductService
 {
@@ -11,6 +14,6 @@ namespace SPSS.Service.Services.ProductService
         Task AddAsync(Product entity);
         Task UpdateAsync(Product entity);
         Task DeleteAsync(Product entity);
-
+        Task<Product> CreateProductAsync(ProductRequest productRequest);
     }
 }

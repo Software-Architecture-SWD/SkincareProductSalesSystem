@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SPSS.Dto.Request;
+using SPSS.Dto.Response;
 using SPSS.Entities;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.UnitOfWork;
+using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
 
-public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _logger) : IProductService
+public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _logger, IFirebaseStorageService _firebaseStorageService) : IProductService
 {
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
@@ -44,53 +48,53 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
             throw;
         }
     }
-    public async Task<(IEnumerable<Product> Products, int TotalCount)> GetFilteredProductsAsync(
-    string? categoryName, string? brandName, string? sortPrice, int page, int pageSize)
-    {
-        try
+        public async Task<(IEnumerable<Product> Products, int TotalCount)> GetFilteredProductsAsync(
+        string? categoryName, string? brandName, string? sortPrice, int page, int pageSize)
         {
-            _logger.LogInformation("Fetching products with filters: Category={Category}, Brand={Brand}, SortPrice={SortPrice}",
-                                   categoryName, brandName, sortPrice);
+            try
+            {
+                _logger.LogInformation("Fetching products with filters: Category={Category}, Brand={Brand}, SortPrice={SortPrice}",
+                                       categoryName, brandName, sortPrice);
 
-            var query = _unitOfWork.Products.Query()
-                .Include(p => p.Category)
-                .Include(p => p.Brand) 
-                .AsQueryable(); 
+                var query = _unitOfWork.Products.Query()
+                    .Include(p => p.Category)
+                    .Include(p => p.Brand) 
+                    .AsQueryable(); 
 
             
-            if (!string.IsNullOrEmpty(categoryName))
-            {
-                query = query.Where(p => p.Category.CategoryName == categoryName);
-            }
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    query = query.Where(p => p.Category.CategoryName == categoryName);
+                }
 
             
-            if (!string.IsNullOrEmpty(brandName))
-            {
-                query = query.Where(p => p.Brand.BrandName == brandName);
-            }
+                if (!string.IsNullOrEmpty(brandName))
+                {
+                    query = query.Where(p => p.Brand.BrandName == brandName);
+                }
 
             
-            if (!string.IsNullOrEmpty(sortPrice))
-            {
-                sortPrice = sortPrice.Trim().ToLower(); 
+                if (!string.IsNullOrEmpty(sortPrice))
+                {
+                    sortPrice = sortPrice.Trim().ToLower(); 
 
-                query = sortPrice == "asc"
-                    ? query.OrderBy(p => p.Price).AsQueryable()
-                    : query.OrderByDescending(p => p.Price).AsQueryable();
+                    query = sortPrice == "asc"
+                        ? query.OrderBy(p => p.Price).AsQueryable()
+                        : query.OrderByDescending(p => p.Price).AsQueryable();
+                }
+
+                var totalCount = await query.CountAsync();
+                var pagedProducts = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+                _logger.LogInformation("Returning {Count} products with filters applied.", pagedProducts.Count);
+                return (pagedProducts, totalCount);
             }
-
-            var totalCount = await query.CountAsync();
-            var pagedProducts = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            _logger.LogInformation("Returning {Count} products with filters applied.", pagedProducts.Count);
-            return (pagedProducts, totalCount);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching filtered products.");
+                throw;
+            }
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching filtered products.");
-            throw;
-        }
-    }
 
 
     public async Task<Product> GetByIdAsync(int id)
@@ -156,4 +160,61 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
             throw;
         }
     }
+    public async Task<Product> CreateProductAsync(ProductRequest productRequest)
+    {
+        try
+        {
+            _logger.LogInformation("Creating a new product: {ProductName}", productRequest.ProductName);
+
+            // ?? Tìm Brand theo tên
+            var brand = await _unitOfWork.Brands.FindByNameAsync(productRequest.BrandName);
+            if (brand == null)
+            {
+                throw new KeyNotFoundException($"Brand '{productRequest.BrandName}' not found.");
+            }
+
+            // ?? Tìm Category theo tên
+            var category = await _unitOfWork.Categories.FindByNameAsync(productRequest.CategoryName);
+            if (category == null)
+            {
+                throw new KeyNotFoundException($"Category '{productRequest.CategoryName}' not found.");
+            }
+
+            // ?? T?o product
+            var product = new Product
+            {
+                ProductName = productRequest.ProductName,
+                Price = productRequest.Price,
+                StockQuantity = productRequest.StockQuantity,
+                Ingredients = productRequest.Ingredients,
+                UsageInstructions = productRequest.UsageInstructions,
+                Benefits = productRequest.Benefits,
+                BrandId = brand.Id,
+                CategoryId = category.Id,
+                isDelete = false,
+                ImageUrl = null
+            };
+
+            // ?? L?u vào database
+            await _unitOfWork.Products.AddAsync(product);
+            await _unitOfWork.SaveChangesAsync();
+
+            // ?? L?y l?i s?n ph?m v?a t?o t? DB ?? ??m b?o có ?? Brand & Category
+            var createdProduct = await _unitOfWork.Products.Query()
+                .Include(p => p.Brand)  // ?? ??m b?o Brand không b? null
+                .Include(p => p.Category) // ?? ??m b?o Category không b? null
+                .FirstOrDefaultAsync(p => p.Id == product.Id);
+
+            _logger.LogInformation("Product '{ProductName}' created successfully with ID {Id}", createdProduct.ProductName, createdProduct.Id);
+            return createdProduct;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating product '{ProductName}'", productRequest.ProductName);
+            throw;
+        }
+    }
+
+
+
 }

@@ -1,4 +1,6 @@
 ﻿using SPSS.Data;
+using SPSS.Repository.Repositories.BrandRepository;
+using SPSS.Repository.Repositories.CategoryRepository;
 using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
@@ -10,12 +12,17 @@ using System.Threading.Tasks;
 
 namespace SPSS.Repository.UnitOfWork
 {
-    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository) : IUnitOfWork
+    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository, IBrandRepository _brandRepository, ICategoryRepository _categoryRepository ) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
         public IFeedbackRepository Feedbacks { get; } = _feedbackRepository;
-
+        public IBrandRepository Brands { get; } = _brandRepository;
+        public ICategoryRepository Categories { get; } = _categoryRepository;
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
         public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();

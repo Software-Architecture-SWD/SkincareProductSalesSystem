@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SPSS.Dto.Account;
+using SPSS.Repository.Repositories.BrandRepository;
+using SPSS.Repository.Repositories.CategoryRepository;
 using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.GenericRepository;
 using SPSS.Repository.Repositories.ProductRepository;
@@ -28,6 +30,7 @@ namespace SPSS
 
             // Auth
             services.AddScoped<IAuthService, AuthService>();
+            //services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 
             // Product
             services.AddScoped<IProductService, ProductService>();
@@ -44,6 +47,11 @@ namespace SPSS
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+
+            services.AddScoped<IBrandRepository, BrandRepository>();
+
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            
 
             return services;
         }
