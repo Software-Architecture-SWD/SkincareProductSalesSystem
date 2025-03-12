@@ -14,5 +14,6 @@ namespace SPSS.Repository.Repositories.ProductRepository
         Task AddAsync(Product p);
         Task UpdateAsync(Product p);
         Task DeleteAsync(Product p);
+        IQueryable<Product> Query();
     }
 }

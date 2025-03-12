@@ -39,5 +39,9 @@ namespace SPSS.Repository.Repositories.ProductRepository
             _context.Products.Update(p);
             await _context.SaveChangesAsync();
         }
+        public IQueryable<Product> Query()
+        {
+            return _context.Products.AsQueryable();
+        }
     }
 }
