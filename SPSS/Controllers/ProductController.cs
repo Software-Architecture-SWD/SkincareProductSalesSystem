@@ -9,6 +9,7 @@ using SPSS.Dto.Request;
 using SPSS.Dto.Response;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
+using Microsoft.EntityFrameworkCore;
 
 namespace SPSS.Controllers
 {
@@ -42,17 +43,37 @@ namespace SPSS.Controllers
             }
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetProductList()
+        //{
+        //    try
+        //    {
+        //        var listProduct = await _productService.GetAllAsync();
+        //        if (listProduct == null)
+        //        {
+        //            return NotFound(new { message = "No products found." });
+        //        }
+        //        return Ok(listProduct);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "An error occurred while retrieving products.", error = ex.Message });
+        //    }
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetProductList()
+        public async Task<IActionResult> GetProductList(int page = 1, int pageSize = 10)
         {
             try
             {
-                var listProduct = await _productService.GetAllAsync();
-                if (listProduct == null)
+                var (products, totalCount) = await _productService.GetPagedProductsAsync(page, pageSize);
+
+                if (!products.Any())
                 {
                     return NotFound(new { message = "No products found." });
                 }
-                return Ok(listProduct);
+
+                return Ok(new { products, totalCount, page, pageSize });
             }
             catch (Exception ex)
             {

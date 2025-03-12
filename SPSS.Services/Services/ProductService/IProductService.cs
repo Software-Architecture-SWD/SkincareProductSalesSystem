@@ -5,6 +5,7 @@ namespace SPSS.Service.Services.ProductService
     public interface IProductService
     {
         Task<IEnumerable<Product>> GetAllAsync();
+        Task<(IEnumerable<Product> Products, int TotalCount)> GetPagedProductsAsync(int page, int pageSize);
         Task<Product> GetByIdAsync(int id);
         Task AddAsync(Product entity);
         Task UpdateAsync(Product entity);

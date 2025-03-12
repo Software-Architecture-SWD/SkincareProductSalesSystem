@@ -23,6 +23,27 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
         }
     }
 
+    public async Task<(IEnumerable<Product> Products, int TotalCount)> GetPagedProductsAsync(int page, int pageSize)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching all products for pagination.");
+
+            var allProducts = await _unitOfWork.Products.GetAllAsync();
+            var totalCount = allProducts.Count();
+
+            var pagedProducts = allProducts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            _logger.LogInformation("Returning {Count} products out of {TotalCount} total.", pagedProducts.Count, totalCount);
+            return (pagedProducts, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching paged products.");
+            throw;
+        }
+    }
+
     public async Task<Product> GetByIdAsync(int id)
     {
         try
