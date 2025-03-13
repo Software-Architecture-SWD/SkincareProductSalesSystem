@@ -1,5 +1,8 @@
-﻿using SPSS.Repository.Repositories.AnswerRepository;
+using SPSS.Repository.Repositories.CategoryRepositoty;
+using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.Repositories.PromotionRepository;
+using SPSS.Repository.Repositories.AnswerRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using System;
 using System.Collections.Generic;
@@ -13,7 +16,10 @@ namespace SPSS.Repository.UnitOfWork
     {
         IProductRepository Products { get; }
         IQuestionRepository Questions { get; }
+        IFeedbackRepository Feedbacks { get; }
+        IPromotionRepository Promotions { get; }   
+        ICategoryRepository Categories { get; }
         IAnswerRepository Answers { get; }
         Task<int> CompleteAsync();
     }
-}
+}   

@@ -1,6 +1,9 @@
-﻿using SPSS.Data;
+using SPSS.Data;
+using SPSS.Repository.Repositories.CategoryRepositoty;
+using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.AnswerRepository;
 using SPSS.Repository.Repositories.ProductRepository;
+using SPSS.Repository.Repositories.PromotionRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using System;
 using System.Collections.Generic;
@@ -10,10 +13,13 @@ using System.Threading.Tasks;
 
 namespace SPSS.Repository.UnitOfWork
 {
-    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IAnswerRepository _answerRepository) : IUnitOfWork
+    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository, IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository, IAnswerRepository _answerRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
+        public IFeedbackRepository Feedbacks { get; } = _feedbackRepository;
+        public IPromotionRepository Promotions { get; } = _promotionRepository;
+        public ICategoryRepository Categories { get; } = _categoryRepository;
         public IAnswerRepository Answers { get; } = _answerRepository;
 
         public async Task<int> CompleteAsync()
