@@ -18,6 +18,10 @@ namespace SPSS.Mapper
             CreateMap<QuestionRequest, Question>();
             CreateMap<Feedback, FeedbackResponse>();
             CreateMap<FeedbackRequest, Feedback>();
+            CreateMap<Promotion, PromotionResponse>();
+            CreateMap<PromotionRequest, Promotion>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false)); 
         }
     }
 }

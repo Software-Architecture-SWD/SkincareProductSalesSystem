@@ -56,5 +56,11 @@ namespace SPSS.Repository.Repositories.ProductRepository
         {
             return _context.Products.AsQueryable();
         }
+        public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _context.Products
+                                 .Where(p => p.CategoryId == categoryId && !p.isDelete)
+                                 .ToListAsync();
+        }
     }
 }
