@@ -15,5 +15,6 @@ namespace SPSS.Repository.Repositories.AnswerSheetRepository
         Task UpdateAsync(AnswerSheet a);
         Task SoftDeleteAsync(int id);
         Task RestoreAsync(int id);
+        Task<AnswerSheet> GetByIdAsync(int id);
     }
 }

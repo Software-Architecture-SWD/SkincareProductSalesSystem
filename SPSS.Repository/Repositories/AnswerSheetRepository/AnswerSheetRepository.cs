@@ -51,5 +51,12 @@ namespace SPSS.Repository.Repositories.AnswerSheetRepository
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<AnswerSheet> GetByIdAsync(int id)
+        {
+            return await _context.AnswerSheets
+                .Where(a => !a.isDelete)
+                .Include(a => a.AppUser)
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
     }
 }

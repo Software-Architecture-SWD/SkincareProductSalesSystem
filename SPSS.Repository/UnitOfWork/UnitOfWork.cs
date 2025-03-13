@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
+using SPSS.Repository.Repositories.AnswerDetailRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -19,7 +20,7 @@ namespace SPSS.Repository.UnitOfWork
         , IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository
         , IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository
         , IAnswerRepository _answerRepository, IBrandRepository _brandRepository
-        , IAnswerSheetRepository _answerSheetRepository) : IUnitOfWork
+        , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
@@ -30,6 +31,7 @@ namespace SPSS.Repository.UnitOfWork
         public IAnswerSheetRepository AnswerSheets { get; } = _answerSheetRepository;
 
         public IBrandRepository Brands { get; } = _brandRepository;
+        public IAnswerDetailRepository AnswerDetails { get; } = _answerDetailRepository;
 
         public async Task<int> CompleteAsync()
         {

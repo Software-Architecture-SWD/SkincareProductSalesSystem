@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SPSS.Service.Services.AnswerDetailService;
+using SPSS.Service.Services.AnswerService;
 
 namespace SPSS.Service.Services.AnswerSheetService
 {
-    public class AnswerSheetService(IUnitOfWork _unitOfWork, ILogger<AnswerSheetService> _logger) : IAnswerSheetService
+    public class AnswerSheetService(IUnitOfWork _unitOfWork, ILogger<AnswerSheetService> _logger, IAnswerDetailService _answerDetailService, IAnswerService _answerService) : IAnswerSheetService
     {
         public async Task<IEnumerable<AnswerSheet>> GetAllAsync()
         {
@@ -103,6 +105,29 @@ namespace SPSS.Service.Services.AnswerSheetService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error restoring AnswerSheet");
+                throw;
+            }
+        }
+        public async Task<IEnumerable<AnswerSheet>> SubmitAnswerSheetsAsync(int answerSheetId, List<int> answerIds)
+        {
+            try
+            {
+                _logger.LogInformation("Submit AnswerSheets");
+                var createdDetails = await _answerDetailService.CreateAnswerDetailsAsync(answerSheetId, answerIds);
+
+                var answerSheet = await _unitOfWork.AnswerSheets.GetByIdAsync(answerSheetId);
+                if (answerSheet == null)
+                {
+                    throw new Exception($"AnswerSheet with ID {answerSheetId} not found.");
+                }
+                var totalPoints = await _answerService.SumPointsAsync(answerIds);
+                answerSheet.TotalPoint = totalPoints;
+                await _unitOfWork.AnswerSheets.UpdateAsync(answerSheet);
+                return new List<AnswerSheet> { answerSheet };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error submitting AnswerSheets");
                 throw;
             }
         }

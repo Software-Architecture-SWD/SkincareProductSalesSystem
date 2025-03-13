@@ -16,5 +16,6 @@ namespace SPSS.Service.Services.AnswerSheetService
         Task DeleteAsync(AnswerSheet entity);
         Task SoftDeleteAsync(int id);
         Task RestoreAsync(int id);
+        Task<IEnumerable<AnswerSheet>> SubmitAnswerSheetsAsync(int answerSheetId, List<int> answerIds);
     }
 }
