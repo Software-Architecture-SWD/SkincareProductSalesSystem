@@ -21,7 +21,13 @@ namespace SPSS.Mapper
             CreateMap<Promotion, PromotionResponse>();
             CreateMap<PromotionRequest, Promotion>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
-                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false)); 
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
+            CreateMap<Cart, CartResponse>()
+                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.AppUser.NormalizedUserName));
+            CreateMap<CartItem, CartItemResponse>()
+                .ForMember(ci => ci.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
+                .ForMember(ci => ci.ImageUrl, opt => opt.MapFrom(src => src.Product.ImageUrl));
+                
         }
     }
 }
