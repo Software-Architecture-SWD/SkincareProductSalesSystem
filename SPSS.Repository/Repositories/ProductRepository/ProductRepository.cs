@@ -18,9 +18,10 @@ namespace SPSS.Repository.Repositories.ProductRepository
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Product p)
+        public async Task DeleteAsync(int id)
         {
-            await _context.Products.AddAsync(p);
+            var product = await _context.Products.FindAsync(id);
+            product.isDelete = true;
             await _context.SaveChangesAsync();
         }
 
@@ -38,6 +39,28 @@ namespace SPSS.Repository.Repositories.ProductRepository
         {
             _context.Products.Update(p);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Brand> GetBrandByNameAsync(string brandName)
+        {
+            return await _context.Brands.FirstOrDefaultAsync(b => b.BrandName == brandName);
+        }
+
+        public async Task<Category> GetCategoryByNameAsync(string categoryName)
+        {
+            return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+
+        }
+
+        public IQueryable<Product> Query()
+        {
+            return _context.Products.AsQueryable();
+        }
+        public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _context.Products
+                                 .Where(p => p.CategoryId == categoryId && !p.isDelete)
+                                 .ToListAsync();
         }
     }
 }
