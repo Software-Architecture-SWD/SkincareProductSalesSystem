@@ -12,7 +12,7 @@ namespace SPSS.Mapper
         public AutoMapperProfile()
         {
             CreateMap<Product, ProductResponse>();
-            CreateMap<ProductRequest, Product>();
+            CreateMap<ProductRequest, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<Question, QuestionResponse>();
             CreateMap<QuestionRequest, Question>();
         }

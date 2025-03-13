@@ -80,11 +80,17 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
         }
     }
 
-    public async Task UpdateAsync(Product p)
+    public async Task UpdateAsync(int id, Product p)
     {
         try
         {
             _logger.LogInformation("Updating product ID {Id}", p.Id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product == null)
+            {
+                _logger.LogWarning("Product with ID {Id} not found.", id);
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+            }
             await _unitOfWork.Products.UpdateAsync(p);
         }
         catch (Exception ex)
@@ -94,16 +100,60 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
         }
     }
 
-    public async Task DeleteAsync(Product p)
+    public async Task<Category> GetCategoryByNameAsync(string categoryName)
     {
         try
         {
-            _logger.LogInformation("Deleting product ID {Id}", p.Id);
-            await _unitOfWork.Products.DeleteAsync(p);
+            var category = await _unitOfWork.Products.GetCategoryByNameAsync(categoryName);
+            if (category == null)
+            {
+                _logger.LogWarning("Category not found: {CategoryName}", categoryName);
+            }
+            return category;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting product ID {Id}", p.Id);
+            _logger.LogError(ex, "Error getting category by name: {CategoryName}", categoryName);
+            throw new Exception("An error occurred while retrieving the category.");
+        }
+    }
+
+    public async Task<Brand> GetBrandByNameAsync(string brandName)
+    {
+        try
+        {
+            var brand = await _unitOfWork.Products.GetBrandByNameAsync(brandName);
+            if (brand == null)
+            {
+                _logger.LogWarning("Brand not found: {BrandName}", brandName);
+            }
+            return brand;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting brand by name: {BrandName}", brandName);
+            throw new Exception("An error occurred while retrieving the brand.");
+        }
+    }
+
+
+    public async Task DeleteAsync(int id)
+    {
+        try
+        {
+            _logger.LogInformation("Deleting product ID {Id}", id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if(product == null)
+            {
+                _logger.LogWarning("Product with ID {Id} not found.", id);
+                throw new KeyNotFoundException($"Product with ID {id} not found.");
+
+            }
+            else await _unitOfWork.Products.DeleteAsync(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting product ID {Id}", id);
             throw;
         }
     }
