@@ -22,7 +22,12 @@ namespace SPSS.Controllers
         {
             try
             {
+                var brand = await _productService.GetBrandByNameAsync(productRequest.BrandName);
+                var category = await _productService.GetCategoryByNameAsync(productRequest.CategoryName);
+
                 var product = _mapper.Map<Product>(productRequest);
+                product.BrandId = brand.Id;
+                product.CategoryId = category.Id;
 
                 if (productRequest.ImageFile != null)
                 {
@@ -100,6 +105,49 @@ namespace SPSS.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
             }
         }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, ProductRequest productRequest)
+        {
+            try
+            {
+                var product = await _productService.GetByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = "Product not found." });
+                }
+                var brand = await _productService.GetBrandByNameAsync(productRequest.BrandName);
+                var category = await _productService.GetCategoryByNameAsync(productRequest.CategoryName);
+                _mapper.Map(productRequest, product);
+                product.BrandId = brand.Id;
+                product.CategoryId = category.Id;
+                await _productService.UpdateAsync(id, product);
+                return Ok("Update successfully!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
+            }
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            try
+            {
+                var product = await _productService.GetByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = "Product not found." });
+                }
+                await _productService.DeleteAsync(id);
+                return Ok("Delete successfully!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
 
         [HttpGet("filter")]
         public async Task<IActionResult> GetFilteredProducts(
