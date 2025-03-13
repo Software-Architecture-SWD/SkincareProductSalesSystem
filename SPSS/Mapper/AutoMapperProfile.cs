@@ -29,7 +29,9 @@ namespace SPSS.Mapper
             CreateMap<AnswerSheet, AnswerSheetResponse>();
             CreateMap<AnswerSheetRequest, AnswerSheet>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));    
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
+            CreateMap<AnswerDetailRequest, AnswerDetail>();
+            CreateMap<AnswerDetail, AnswerDetailResponse>();
         }
     }
 }

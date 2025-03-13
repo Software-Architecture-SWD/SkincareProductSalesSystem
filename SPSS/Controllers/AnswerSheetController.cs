@@ -71,5 +71,25 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while restoring the answer sheet.", error = ex.Message });
             }
         }
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitAnswerSheet([FromBody] SubmitAnswerSheetRequest request)
+        {
+            if (request == null || request.AnswerIds == null || request.AnswerIds.Count == 0)
+            {
+                return BadRequest(new { message = "AnswerSheetId and AnswerIds are required." });
+            }
+
+            try
+            {
+                // Gọi service để tạo AnswerDetails và cập nhật AnswerSheet
+                IEnumerable<AnswerSheet> result = await _answerSheetService.SubmitAnswerSheetsAsync(request.AnswerSheetId, request.AnswerIds);
+                var answerSheetResponses = _mapper.Map<IEnumerable<AnswerSheetResponse>>(result);
+                return Ok(answerSheetResponses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error submitting answer sheets", error = ex.Message });
+            }
+        }
     }
 }
