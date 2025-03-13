@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SPSS.Dto.Request;
 using SPSS.Dto.Response;
 using SPSS.Entities;
+using SPSS.Service.Dto.Request;
 using SPSS.Service.Services.QuestionService;
 
 namespace SPSS.API.Controllers
