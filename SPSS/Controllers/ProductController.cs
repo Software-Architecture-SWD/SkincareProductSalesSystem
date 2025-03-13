@@ -148,6 +148,8 @@ namespace SPSS.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
+            }
+        }
 
         [HttpGet("filter")]
         public async Task<IActionResult> GetFilteredProducts(

@@ -51,5 +51,10 @@ namespace SPSS.Repository.Repositories.ProductRepository
             return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
 
         }
+
+        public IQueryable<Product> Query()
+        {
+            return _context.Products.AsQueryable();
+        }
     }
 }
