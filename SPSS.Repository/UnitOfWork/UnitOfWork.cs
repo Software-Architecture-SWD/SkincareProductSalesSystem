@@ -10,10 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SPSS.Repository.Repositories.BrandReposiotry;
 
 namespace SPSS.Repository.UnitOfWork
 {
-    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository, IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository, IAnswerRepository _answerRepository) : IUnitOfWork
+    public class UnitOfWork(AppDbContext _context, IProductRepository _productRepository, IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository, IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository, IAnswerRepository _answerRepository,
+        IBrandRepository _brandRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
@@ -21,6 +23,8 @@ namespace SPSS.Repository.UnitOfWork
         public IPromotionRepository Promotions { get; } = _promotionRepository;
         public ICategoryRepository Categories { get; } = _categoryRepository;
         public IAnswerRepository Answers { get; } = _answerRepository;
+
+        public IBrandRepository Brands { get; } = _brandRepository;
 
         public async Task<int> CompleteAsync()
         {

@@ -18,6 +18,10 @@ using SPSS.Service.Services.PromotionService;
 using SPSS.Service.Services.QuestionService;
 using SPSS.Service.Services.VNPayService;
 using VNPAY.NET;
+using SPSS.Repositories;
+using SPSS.Services;
+using SPSS.Repository.Repositories.BrandReposiotry;
+using SPSS.Service.Services.BrandService;
 
 namespace SPSS
 {
@@ -42,9 +46,10 @@ namespace SPSS
             services.AddScoped<IPromotionRepository, PromotionRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>(); // Đảm bảo CategoryRepository đã được đăng ký
+            services.AddScoped<ICategoryRepository, CategoryRepository>(); 
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IAnswerRepository, AnswerRepository>();
+            services.AddScoped<IBrandRepository, BrandRepository>();
 
             // Đăng ký các Services
             services.AddScoped<IProductService, ProductService>();
@@ -53,6 +58,7 @@ namespace SPSS
             services.AddScoped<IFeedbackService, FeedbackService>();             
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IBrandService, BrandService>();
 
             return services;
         }
