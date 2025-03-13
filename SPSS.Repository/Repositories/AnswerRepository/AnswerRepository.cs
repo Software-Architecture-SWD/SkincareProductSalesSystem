@@ -49,5 +49,11 @@ namespace SPSS.Repository.Repositories.AnswerRepository
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<int> SumPointsAsync(IEnumerable<int> id)
+        {
+            return await _context.Answers
+                .Where(a => id.Contains(a.Id) && !a.isDelete)
+                .SumAsync(a => a.Point);
+        }
     }
 }

@@ -16,5 +16,7 @@ namespace SPSS.Service.Services.AnswerService
         Task DeleteAsync(Answer entity);
         Task SoftDeleteAsync(int id);
         Task RestoreAsync(int id);
+        Task<int> SumPointsAsync(IEnumerable<int> id);
+
     }
 }

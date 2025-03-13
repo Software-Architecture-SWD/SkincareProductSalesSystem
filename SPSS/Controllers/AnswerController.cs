@@ -4,7 +4,6 @@ using SPSS.Dto.Request;
 using SPSS.Dto.Response;
 using SPSS.Entities;
 using SPSS.Service.Services.AnswerService;
-using SPSS.Service.Services.ProductService;
 
 namespace SPSS.API.Controllers
 {
@@ -35,7 +34,7 @@ namespace SPSS.API.Controllers
                 var (answers, totalCount) = await _answerService.GetPagedAnswersAsync(page, pageSize);
                 if (!answers.Any())
                 {
-                    return NotFound(new { message = "No prodanswersucts found." });
+                    return NotFound(new { message = "No answers found." });
                 }
                 var answerResponses = _mapper.Map<IEnumerable<AnswerResponse>>(answers);
                 return Ok(new { answerResponses, totalCount, page, pageSize });

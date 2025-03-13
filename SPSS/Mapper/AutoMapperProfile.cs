@@ -15,7 +15,7 @@ namespace SPSS.Mapper
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<Question, QuestionResponse>();
-            CreateMap<QuestionRequest, Question>();
+            CreateMap<QuestionRequest, Question>().ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
             CreateMap<Feedback, FeedbackResponse>();
             CreateMap<FeedbackRequest, Feedback>();
             CreateMap<Promotion, PromotionResponse>();
@@ -23,10 +23,13 @@ namespace SPSS.Mapper
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
                 .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false)); 
             CreateMap<Answer, AnswerResponse>();
-            CreateMap<AnswerRequest, Answer>();
+            CreateMap<AnswerRequest, Answer>().ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
             CreateMap<BrandRequest, Brand>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<Brand, BrandResponse>();
-
+            CreateMap<AnswerSheet, AnswerSheetResponse>();
+            CreateMap<AnswerSheetRequest, AnswerSheet>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));    
         }
     }
 }

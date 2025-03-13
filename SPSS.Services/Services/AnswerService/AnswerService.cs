@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SPSS.Entities;
 using SPSS.Repository.UnitOfWork;
-using SPSS.Service.Services.AnswerService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,5 +112,19 @@ namespace SPSS.Service.Services.AnswerService
                 throw;
             }
         }
+        public async Task<int> SumPointsAsync(IEnumerable<int> id)
+        {
+            try
+            {
+                _logger.LogInformation("Summing points for answers with IDs {Ids}", string.Join(", ", id));
+                return await _unitOfWork.Answers.SumPointsAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error summing points for answers with IDs {Ids}", string.Join(", ", id));
+                throw;
+            }
+        }
     }
+
 }
