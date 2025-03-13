@@ -20,6 +20,27 @@ public class QuestionService(IUnitOfWork _unitOfWork, ILogger<QuestionService> _
         }
     }
 
+    public async Task<(IEnumerable<Question> Questions, int TotalCount)> GetPagedQuestionsAsync(int page, int pageSize)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching all Questions for pagination.");
+
+            var allQuestions = await _unitOfWork.Questions.GetAllAsync();
+            var totalCount = allQuestions.Count();
+
+            var pagedQuestions = allQuestions.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            _logger.LogInformation("Returning {Count} Questions out of {TotalCount} total.", pagedQuestions.Count, totalCount);
+            return (pagedQuestions, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching paged Questions.");
+            throw;
+        }
+    }
+
     public async Task AddAsync(Question p)
     {
         try
@@ -58,6 +79,33 @@ public class QuestionService(IUnitOfWork _unitOfWork, ILogger<QuestionService> _
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting question ID {Id}", p.Id);
+            throw;
+        }
+    }
+    public async Task SoftDeleteAsync(int id)
+    {
+        try
+        {
+            _logger.LogInformation("Deleting Question ID {Id}", id);
+            await _unitOfWork.Questions.SoftDeleteAsync(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error soft deleting Question ID {Id}", id);
+            throw;
+        }
+    }
+
+    public async Task RestoreAsync(int id)
+    {
+        try
+        {
+            _logger.LogInformation("Restore Question ID {Id}", id);
+            await _unitOfWork.Questions.RestoreAsync(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error restoring Question ID {Id}", id);
             throw;
         }
     }

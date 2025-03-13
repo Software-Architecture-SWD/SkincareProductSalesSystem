@@ -13,5 +13,7 @@ namespace SPSS.Repository.Repositories.QuestionRepository
         Task AddAsync(Question q);
         Task UpdateAsync(Question q);
         Task DeleteAsync(Question q);
+        Task SoftDeleteAsync(int id);
+        Task RestoreAsync(int id);
     }
 }

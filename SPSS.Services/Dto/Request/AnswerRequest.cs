@@ -13,6 +13,5 @@ namespace SPSS.Dto.Request
         public int QuestionId { get; set; }
         public string AnswerText { get; set; } = string.Empty;
         public int Point { get; set; }
-        public bool isDelete { get; set; } = false;
     }
 }

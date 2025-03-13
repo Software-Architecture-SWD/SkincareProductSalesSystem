@@ -10,6 +10,5 @@ namespace SPSS.Dto.Request
     public class QuestionRequest
     {
         public string QuestionDESC { get; set; } = string.Empty;
-        public bool isDelete { get; set; } = false;
     }
 }

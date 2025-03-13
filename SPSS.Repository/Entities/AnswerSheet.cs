@@ -15,7 +15,6 @@ namespace SPSS.Entities
         [Required]
         public DateTime CreatedAt { get; set; }
 
-        [Required]
         public int TotalPoint { get; set; }
         public bool isDelete { get; set; } = false;
         public virtual ICollection<AnswerDetail> AnswerDetails { get; set; } = new List<AnswerDetail>();

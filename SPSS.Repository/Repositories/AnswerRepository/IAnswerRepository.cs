@@ -15,6 +15,7 @@ namespace SPSS.Repository.Repositories.AnswerRepository
         Task UpdateAsync(Answer a);
         Task SoftDeleteAsync(int id);
         Task RestoreAsync(int id);
+        Task<int> SumPointsAsync(IEnumerable<int> id);
 
     }
 }

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
+using SPSS.Repository.Repositories.AnswerSheetRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -23,6 +24,7 @@ namespace SPSS.Repository.UnitOfWork
         IAnswerRepository Answers { get; }
         
         IBrandRepository Brands { get; }
+        IAnswerSheetRepository AnswerSheets { get; }
         Task<int> CompleteAsync();
     }
 }   
