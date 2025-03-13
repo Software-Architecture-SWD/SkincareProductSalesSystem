@@ -11,6 +11,6 @@ namespace SPSS.Dto.Request
         public string? Ingredients { get; set; }
         public string? UsageInstructions { get; set; }
         public string? Benefits { get; set; }
-        public string Status { get; set; } = string.Empty;
+        public bool isDelete { get; set; } = false;
     }
 }
