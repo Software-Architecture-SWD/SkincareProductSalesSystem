@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace SPSS.Dto.Response
 {
-    public class QuestionResponse
+    public class AnswerResponse
     {
         public int Id { get; set; }
-        public string QuestionDESC { get; set; } = string.Empty;
+        public int QuestionId { get; set; }
+        public string AnswerText { get; set; } = string.Empty;
+        public int Point { get; set; }
         public bool isDelete { get; set; } = false;
-        public ICollection<AnswerResponse> Answers { get; set; } = new List<AnswerResponse>();
     }
 }

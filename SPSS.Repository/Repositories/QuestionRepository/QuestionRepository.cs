@@ -18,7 +18,7 @@ namespace SPSS.Repository.Repositories.QuestionRepository
         }
         public async Task<IEnumerable<Question>> GetAllAsync()
         {
-            return await _context.Question.ToListAsync();
+            return await _context.Question.Include(q => q.Answers).ToListAsync();
         }
         public async Task UpdateAsync(Question q)
         {

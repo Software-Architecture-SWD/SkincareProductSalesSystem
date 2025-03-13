@@ -1,11 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SPSS.Repository.Repositories.CategoryRepositoty;
 using SPSS.Repository.Repositories.FeedbackRepository;
+using SPSS.Dto.Account;
+using SPSS.Repository.Repositories.AnswerRepository;
 using SPSS.Repository.Repositories.GenericRepository;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.PromotionRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using SPSS.Repository.UnitOfWork;
+using SPSS.Service.Services.AnswerService;
 using SPSS.Service.Services.AuthService;
 using SPSS.Service.Services.EmailService;
 using SPSS.Service.Services.FeedbackService;
@@ -40,15 +43,16 @@ namespace SPSS
             services.AddScoped<IQuestionRepository, QuestionRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>(); // Đảm bảo CategoryRepository đã được đăng ký
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IAnswerRepository, AnswerRepository>();
 
             // Đăng ký các Services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IPromotionService, PromotionService>();
             services.AddScoped<IQuestionService, QuestionService>();
-            services.AddScoped<IFeedbackService, FeedbackService>();
-          
-            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IFeedbackService, FeedbackService>();             
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IAnswerService, AnswerService>();
 
             return services;
         }

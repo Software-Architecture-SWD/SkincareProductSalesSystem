@@ -22,6 +22,8 @@ namespace SPSS.Mapper
             CreateMap<PromotionRequest, Promotion>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow)) 
                 .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false)); 
+            CreateMap<Answer, AnswerResponse>();
+            CreateMap<AnswerRequest, Answer>();
         }
     }
 }
