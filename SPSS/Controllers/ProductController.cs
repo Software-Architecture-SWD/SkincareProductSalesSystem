@@ -106,6 +106,7 @@ namespace SPSS.Controllers
             }
         }
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, ProductRequest productRequest)
         {
@@ -147,6 +148,30 @@ namespace SPSS.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFilteredProducts(
+            string? categoryName,
+            string? brandName,
+            string? sortPrice,
+            int page = 1,
+            int pageSize = 10)
+        {
+            try
+            {
+                var (products, totalCount) = await _productService.GetFilteredProductsAsync(categoryName, brandName, sortPrice, page, pageSize);
+
+                if (!products.Any())
+                {
+                    return NotFound(new { message = "No products found with the given filters." });
+                }
+
+                var productResponses = _mapper.Map<IEnumerable<ProductResponse>>(products);
+                return Ok(new { products = productResponses, totalCount, page, pageSize });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving filtered products.", error = ex.Message });
             }
         }
     }

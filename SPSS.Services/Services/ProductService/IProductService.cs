@@ -6,6 +6,7 @@ namespace SPSS.Service.Services.ProductService
     {
         Task<IEnumerable<Product>> GetAllAsync();
         Task<(IEnumerable<Product> Products, int TotalCount)> GetPagedProductsAsync(int page, int pageSize);
+        Task<(IEnumerable<Product> Products, int TotalCount)> GetFilteredProductsAsync(string? categoryName, string? brandName, string? sortPrice, int page, int pageSize);
         Task<Product> GetByIdAsync(int id);
         Task AddAsync(Product p);
         Task UpdateAsync(int id, Product p);

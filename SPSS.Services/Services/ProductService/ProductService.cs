@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SPSS.Entities;
 using SPSS.Repository.Repositories.ProductRepository;
@@ -43,6 +44,54 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
             throw;
         }
     }
+    public async Task<(IEnumerable<Product> Products, int TotalCount)> GetFilteredProductsAsync(
+    string? categoryName, string? brandName, string? sortPrice, int page, int pageSize)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching products with filters: Category={Category}, Brand={Brand}, SortPrice={SortPrice}",
+                                   categoryName, brandName, sortPrice);
+
+            var query = _unitOfWork.Products.Query()
+                .Include(p => p.Category)
+                .Include(p => p.Brand) 
+                .AsQueryable(); 
+
+            
+            if (!string.IsNullOrEmpty(categoryName))
+            {
+                query = query.Where(p => p.Category.CategoryName == categoryName);
+            }
+
+            
+            if (!string.IsNullOrEmpty(brandName))
+            {
+                query = query.Where(p => p.Brand.BrandName == brandName);
+            }
+
+            
+            if (!string.IsNullOrEmpty(sortPrice))
+            {
+                sortPrice = sortPrice.Trim().ToLower(); 
+
+                query = sortPrice == "asc"
+                    ? query.OrderBy(p => p.Price).AsQueryable()
+                    : query.OrderByDescending(p => p.Price).AsQueryable();
+            }
+
+            var totalCount = await query.CountAsync();
+            var pagedProducts = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            _logger.LogInformation("Returning {Count} products with filters applied.", pagedProducts.Count);
+            return (pagedProducts, totalCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching filtered products.");
+            throw;
+        }
+    }
+
 
     public async Task<Product> GetByIdAsync(int id)
     {
@@ -57,7 +106,7 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
             }
 
-            return product;
+            return product; 
         }
         catch (Exception ex)
         {

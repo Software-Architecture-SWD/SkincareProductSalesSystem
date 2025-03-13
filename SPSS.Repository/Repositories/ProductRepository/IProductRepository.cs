@@ -14,8 +14,8 @@ namespace SPSS.Repository.Repositories.ProductRepository
         Task AddAsync(Product p);
         Task UpdateAsync(Product p);
         Task DeleteAsync(int id);
-
         Task<Brand> GetBrandByNameAsync(string brandName);
         Task<Category> GetCategoryByNameAsync(string categoryName);
+
     }
 }

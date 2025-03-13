@@ -106,7 +106,7 @@ namespace SPSS
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-            
+
 
 
 

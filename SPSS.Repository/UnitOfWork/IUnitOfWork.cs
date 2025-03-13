@@ -1,4 +1,5 @@
-﻿using SPSS.Repository.Repositories.ProductRepository;
+﻿using SPSS.Repository.Repositories.FeedbackRepository;
+using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace SPSS.Repository.UnitOfWork
     {
         IProductRepository Products { get; }
         IQuestionRepository Questions { get; }
+        IFeedbackRepository Feedbacks { get; }
         Task<int> CompleteAsync();
     }
-}
+}   

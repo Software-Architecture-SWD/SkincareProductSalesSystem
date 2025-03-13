@@ -49,6 +49,7 @@ namespace SPSS.Repository.Repositories.ProductRepository
         public async Task<Category> GetCategoryByNameAsync(string categoryName)
         {
             return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+
         }
     }
 }
