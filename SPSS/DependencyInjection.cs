@@ -46,6 +46,9 @@ namespace SPSS
             services.AddScoped<IPromotionService, PromotionService>();
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IFeedbackService, FeedbackService>();
+          
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<ICartService, CartService>();
 
             return services;
         }
