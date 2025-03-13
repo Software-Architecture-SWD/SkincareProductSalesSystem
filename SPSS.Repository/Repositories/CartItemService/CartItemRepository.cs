@@ -36,7 +36,7 @@ namespace SPSS.Repository.Repositories.CartItemService
 
         public async Task<List<CartItem>> GetCartItemsByCartIdAsync(int cartId)
         {
-            var items = _context.CartItems.Where(i => i.CartId == cartId).Include(i => i.Product.ProductName).ToList();
+            var items = _context.CartItems.Where(i => i.CartId == cartId).ToList();
             return items;
         }
 
