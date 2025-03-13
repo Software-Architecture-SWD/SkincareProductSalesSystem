@@ -24,6 +24,9 @@ namespace SPSS.Mapper
                 .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false)); 
             CreateMap<Answer, AnswerResponse>();
             CreateMap<AnswerRequest, Answer>();
+            CreateMap<BrandRequest, Brand>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<Brand, BrandResponse>();
+
         }
     }
 }

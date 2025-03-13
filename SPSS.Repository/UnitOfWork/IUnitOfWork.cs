@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SPSS.Repository.Repositories.BrandReposiotry;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -20,6 +21,8 @@ namespace SPSS.Repository.UnitOfWork
         IPromotionRepository Promotions { get; }   
         ICategoryRepository Categories { get; }
         IAnswerRepository Answers { get; }
+        
+        IBrandRepository Brands { get; }
         Task<int> CompleteAsync();
     }
 }   
