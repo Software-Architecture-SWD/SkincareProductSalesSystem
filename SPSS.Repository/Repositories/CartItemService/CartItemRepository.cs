@@ -36,14 +36,13 @@ namespace SPSS.Repository.Repositories.CartItemService
 
         public async Task<List<CartItem>> GetCartItemsByCartIdAsync(int cartId)
         {
-            var items = _context.CartItems.Where(i => i.CartId == cartId).ToList();
+            var items = _context.CartItems.Where(i => i.CartId == cartId).Include(i=> i.Product).ToList();
             return items;
         }
 
         public async Task UpdateCartItemAsync(CartItem cartItem, int quantity)
         {
             cartItem.Quantity = quantity;
-            cartItem.TotalPrice = cartItem.Product.Price * quantity;
             _context.Update(cartItem);
             await _context.SaveChangesAsync();
         }
