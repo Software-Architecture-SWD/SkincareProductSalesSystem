@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SPSS.Dto.Response
+namespace SPSS.Service.Dto.Response
 {
-    public class QuestionResponse
+    public class AnswerSheetResponse
     {
         public int Id { get; set; }
-        public string QuestionDESC { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public int TotalPoint { get; set; }
         public bool isDelete { get; set; } = false;
-        public ICollection<AnswerResponse> Answers { get; set; } = new List<AnswerResponse>();
     }
 }
