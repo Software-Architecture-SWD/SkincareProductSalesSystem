@@ -49,7 +49,6 @@ namespace SPSS.Service.Services.CartItemService
             if (cartItem != null)
             {
                 cartItem.Quantity += 1;
-                cartItem.TotalPrice = product.Price * cartItem.Quantity;
                 await _unitOfWork.CartItems.UpdateCartItemAsync(cartItem, cartItem.Quantity);
             }
             else
@@ -59,7 +58,6 @@ namespace SPSS.Service.Services.CartItemService
                     CartId = cartId,
                     ProductId = productId,
                     Quantity = 1,
-                    TotalPrice = product.Price
                 };
 
                 await _unitOfWork.CartItems.AddCartItemAsync(cartItem);

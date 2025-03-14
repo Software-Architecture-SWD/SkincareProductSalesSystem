@@ -27,7 +27,7 @@ public class CartController : ControllerBase
             cart = await _cartService.CreateCartAsync(new Cart { UserId = userId, TotalAmount = 0, ItemsCount = 0 }); 
         }
         var cartResponse = _mapper.Map<CartResponse>(cart);
-        return Ok(cart);
+        return Ok(cartResponse);
     }
 
     [HttpDelete("{cartId}/clear")]
