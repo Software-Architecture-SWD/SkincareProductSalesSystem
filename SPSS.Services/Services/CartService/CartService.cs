@@ -1,66 +1,46 @@
-﻿using SPSS.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using SPSS.Entities;
 using SPSS.Repositories;
+using SPSS.Repository.UnitOfWork;
 
 namespace SPSS.Services
 {
     public class CartService : ICartService
     {
-        private readonly ICartRepository _cartRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CartService(ICartRepository cartRepository)
+        public CartService(IUnitOfWork unitOfWork)
         {
-            _cartRepository = cartRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<Cart> GetOrCreateCartAsync(string userId)
+        public async Task<bool> ClearCartAsync(int cartId)
         {
-            var cart = await _cartRepository.GetCartByUserIdAsync(userId);
-            if (cart == null)
+            var cartItems = await _unitOfWork.CartItems.GetCartItemsByCartIdAsync(cartId);
+
+            if (!cartItems.Any()) return false;
+
+            foreach (var item in cartItems)
             {
-                cart = new Cart { UserId = userId, TotalAmount = 0, ItemsCount = 0 };
-                await _cartRepository.AddCartAsync(cart);
+                await _unitOfWork.CartItems.RemoveCartItemAsync(item.Id);
             }
+            var saved = await _unitOfWork.CompleteAsync();
+            if (saved == 0) return false;
+            return true;
+        }
+
+        public async Task<Cart> CreateCartAsync(Cart cart)
+        {
+            var newCart = await _unitOfWork.Carts.AddCartAsync(cart);
+            await _unitOfWork.CompleteAsync(); // Ensure changes are saved
+            return newCart;
+        }
+
+        public async Task<Cart> GetCartByUserIdAsync(string userId)
+        {
+            var user = await _unitOfWork.Users.GetUserById(userId);
+            var cart = await _unitOfWork.Carts.GetCartByUserIdAsync(userId);
             return cart;
-        }
-
-        public async Task AddToCartAsync(string userId, CartItem cartItem)
-        {
-            var cart = await GetOrCreateCartAsync(userId);
-            var existingItem = cart.CartItems.FirstOrDefault(i => i.ProductId == cartItem.ProductId);
-
-            if (existingItem != null)
-            {
-                existingItem.Quantity += cartItem.Quantity;
-            }
-            else
-            {
-                cart.CartItems.Add(cartItem);
-            }
-
-            cart.TotalAmount = cart.CartItems.Sum(i => i.TotalPrice * i.Quantity);
-            cart.ItemsCount = cart.CartItems.Sum(i => i.Quantity);
-
-            await _cartRepository.UpdateCartAsync(cart);
-        }
-
-        public async Task RemoveFromCartAsync(string userId, int cartItemId)
-        {
-            var cart = await GetOrCreateCartAsync(userId);
-            var itemToRemove = cart.CartItems.FirstOrDefault(i => i.Id == cartItemId);
-
-            if (itemToRemove != null)
-            {
-                cart.CartItems.Remove(itemToRemove);
-                cart.TotalAmount = cart.CartItems.Sum(i => i.TotalPrice * i.Quantity);
-                cart.ItemsCount = cart.CartItems.Sum(i => i.Quantity);
-                await _cartRepository.UpdateCartAsync(cart);
-            }
-        }
-
-        public async Task<decimal> GetTotalAmountAsync(string userId)
-        {
-            var cart = await GetOrCreateCartAsync(userId);
-            return cart.TotalAmount;
         }
     }
 }

@@ -4,32 +4,31 @@ using SPSS.Entities;
 
 namespace SPSS.Repositories
 {
-    public class CartRepository : ICartRepository
+    public class CartRepository(AppDbContext _context) : ICartRepository
     {
-        private readonly AppDbContext _context;
-
-        public CartRepository(AppDbContext context)
+        public async Task<Cart> GetCartByUserIdAsync(string userId)
         {
-            _context = context;
+            return await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
-        public async Task<Cart?> GetCartByUserIdAsync(string userId)
-        {
-            return await _context.Carts
-                .Include(c => c.CartItems)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-        }
-
-        public async Task AddCartAsync(Cart cart)
+        public async Task<Cart> AddCartAsync(Cart cart)
         {
             await _context.Carts.AddAsync(cart);
             await _context.SaveChangesAsync();
+            return cart;
         }
 
         public async Task UpdateCartAsync(Cart cart)
         {
-            _context.Carts.Update(cart);
+            _context.Update(cart);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Cart> GetCartById(int id)
+        {
+            return await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }

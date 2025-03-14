@@ -1,10 +1,16 @@
+
 using SPSS.Data;
+using SPSS.Repositories;
 using SPSS.Repository.Repositories.CategoryRepositoty;
 using SPSS.Repository.Repositories.FeedbackRepository;
 using SPSS.Repository.Repositories.AnswerRepository;
+using SPSS.Repository.Repositories.CartItemService;
+using SPSS.Repository.Repositories.CategoryRepositoty;
+using SPSS.Repository.Repositories.OrderItemService;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.PromotionRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
+using SPSS.Repository.Repositories.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +26,10 @@ namespace SPSS.Repository.UnitOfWork
         , IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository
         , IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository
         , IAnswerRepository _answerRepository, IBrandRepository _brandRepository
-        , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository) : IUnitOfWork
+        , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository
+        , ICartRepository _cartRepository, ICartItemRepository _cartItem
+        , IOrderRepository _orderRepository, IOrderItemRepository _orderItemRepository
+        , IUserRepository _userRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
@@ -32,6 +41,12 @@ namespace SPSS.Repository.UnitOfWork
 
         public IBrandRepository Brands { get; } = _brandRepository;
         public IAnswerDetailRepository AnswerDetails { get; } = _answerDetailRepository;
+
+        public ICartRepository Carts { get; } = _cartRepository;
+        public ICartItemRepository CartItems { get; } = _cartItem;
+        public IOrderRepository Orders { get; } = _orderRepository;
+        public IOrderItemRepository OrderItems { get; } = _orderItemRepository;
+        public IUserRepository Users { get; } = _userRepository;
 
         public async Task<int> CompleteAsync()
         {
