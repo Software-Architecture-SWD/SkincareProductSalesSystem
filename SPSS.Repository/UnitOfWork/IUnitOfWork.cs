@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
+using SPSS.Repository.Repositories.ResultRepository;
+using SPSS.Repository.Repositories.SkinTypeRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -36,7 +39,9 @@ namespace SPSS.Repository.UnitOfWork
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
         IUserRepository Users { get; }
-
+        IPaymentRepository Payments { get; }
+        IResultRepository Results { get; }
+        ISkinTypeRepository SkinTypes { get; }
         Task<int> CompleteAsync();
     }
 }   

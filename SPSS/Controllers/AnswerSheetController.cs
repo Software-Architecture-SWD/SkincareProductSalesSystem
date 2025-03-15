@@ -81,15 +81,20 @@ namespace SPSS.API.Controllers
 
             try
             {
-                // Gọi service để tạo AnswerDetails và cập nhật AnswerSheet
-                IEnumerable<AnswerSheet> result = await _answerSheetService.SubmitAnswerSheetsAsync(request.AnswerSheetId, request.AnswerIds);
-                var answerSheetResponses = _mapper.Map<IEnumerable<AnswerSheetResponse>>(result);
-                return Ok(answerSheetResponses);
+                // Gọi service để tạo AnswerDetails, cập nhật AnswerSheet và lấy kết quả loại da
+                var (skinType, totalPoints) = await _answerSheetService.SubmitAnswerSheetsAsync(request.AnswerSheetId, request.AnswerIds);
+
+                return Ok(new
+                {
+                    SkinType = skinType,
+                    TotalPoints = totalPoints
+                });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Error submitting answer sheets", error = ex.Message });
             }
         }
+
     }
 }

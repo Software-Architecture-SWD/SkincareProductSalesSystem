@@ -12,8 +12,8 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250310053917_UpdateDB")]
-    partial class UpdateDB
+    [Migration("20250314130630_DBlocal")]
+    partial class DBlocal
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -489,10 +489,6 @@ namespace SPSS.Repository.Migrations
 
                     b.Property<int>("ItemsCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
@@ -983,7 +979,7 @@ namespace SPSS.Repository.Migrations
                     b.HasIndex("SkinTypeId")
                         .IsUnique();
 
-                    b.ToTable("Result");
+                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("SPSS.Entities.Routines", b =>
