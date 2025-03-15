@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Entities;
+using SPSS.Repository.Enum;
 using System.Security.Claims;
 
 [Route("api/[controller]")]
@@ -15,22 +16,19 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateOrderFromCart()
-    {
-        try
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
-
-            var order = await _orderService.CreateOrderFromCartAsync(userId);
-            return Ok(order);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
+    //[HttpPost("create/{userId}")]
+    //public async Task<IActionResult> CreateOrder(string userId)
+    //{
+    //    try
+    //    {
+    //        var order = await _orderService.CreateOrderAsync(new Order { UserId = userId, Status = OrderStatus.Pending });
+    //        return Ok(order);
+    //    }
+    //    catch (Exception ex)
+    //    {   
+    //        return BadRequest(new { message = ex.Message });
+    //    }
+    //}
 
     [HttpGet("{orderId}")]
     public async Task<IActionResult> GetOrderById(int orderId)
@@ -52,7 +50,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPut("{orderId}/status")]
-    public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] string status)
+    public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatus status)
     {
         try
         {
