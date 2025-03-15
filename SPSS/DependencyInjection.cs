@@ -35,6 +35,10 @@ using SPSS.Service.Services.AnswerSheetService;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Service.Services.AnswerDetailService;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.ResultRepository;
+using SPSS.Service.Services.ResultService;
+using SPSS.Repository.Repositories.SkinTypeRepository;
+using SPSS.Service.Services.SkinTypeService;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -64,6 +68,8 @@ namespace SPSS
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
             services.AddScoped<IAnswerDetailRepository, AnswerDetailRepository>();
+            services.AddScoped<IResultRepository, ResultRepository>();
+            services.AddScoped<ISkinTypeRepository, SkinTypeRepository>();
 
             // Đăng ký các Services
             services.AddScoped<IProductService, ProductService>();
@@ -74,7 +80,8 @@ namespace SPSS
             services.AddScoped<IBrandService, BrandService>();
             services.AddScoped<IAnswerSheetService, AnswerSheetService>();
             services.AddScoped<IAnswerDetailService, AnswerDetailService>();
-          
+            services.AddScoped<IResultService, ResultService>();
+            services.AddScoped<ISkinTypeService, SkinTypeService>();
             //Cart
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartService, CartService>();
