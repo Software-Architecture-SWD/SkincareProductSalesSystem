@@ -30,7 +30,7 @@ namespace SPSS.Repository.Repositories.CartItemService
 
         public async Task<CartItem> GetCartItemByIdAsync(int cartItemId)
         {
-            var item = _context.CartItems.FirstOrDefault(i => i.Id == cartItemId);
+            var item = _context.CartItems.Where(i => i.Id == cartItemId).Include(i => i.Product).FirstOrDefault();
             return item;
         }
 
@@ -45,6 +45,11 @@ namespace SPSS.Repository.Repositories.CartItemService
             cartItem.Quantity = quantity;
             _context.Update(cartItem);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveRange(IEnumerable<CartItem> cartItems)
+        {
+            _context.CartItems.RemoveRange(cartItems);
         }
     }
 }
