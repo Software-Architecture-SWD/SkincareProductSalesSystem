@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SPSS.Repository.Repositories.CategoryRepositoty
+namespace SPSS.Service.Services.CategoryService
 {
-    public interface ICategoryRepository
+    public interface ICategoryService
     {
         Task<IEnumerable<Category>> GetAllAsync();
-        Task AddAsync(Category c);
-        Task UpdateAsync(Category c);
-        Task DeleteAsync(int id);
         Task<Category> GetByIdAsync(int id);
-        IQueryable<Category> Query();
+        Task AddAsync(Category c);
+        Task UpdateAsync(int id, Category c);
+        Task DeleteAsync(int id);
     }
 }

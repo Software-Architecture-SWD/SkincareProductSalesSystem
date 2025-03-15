@@ -21,21 +21,24 @@ namespace SPSS.Service.Services.VNPayService
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly ILogger<VNPayService> _logger;
-
-        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger, IUnitOfWork unitOfWork)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _vnpay = vnpay;
             _configuration = configuration;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
 
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
         }
 
-        public async Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress)
+        public async Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress, int paymentId)
         {
             try
             {
+                _httpContextAccessor.HttpContext?.Session.SetInt32("PaymentId", paymentId);
+
                 var request = new PaymentRequest
                 {
                     PaymentId = DateTime.Now.Ticks,
@@ -64,7 +67,7 @@ namespace SPSS.Service.Services.VNPayService
             }
         }
 
-        public async Task<PaymentResult> ProcessIpnAction(IQueryCollection query, int paymentId)
+        public async Task<PaymentResult> ProcessIpnAction(IQueryCollection query)
         {
             if (query.Count == 0)
             {
@@ -75,6 +78,7 @@ namespace SPSS.Service.Services.VNPayService
             try
             {
                 var paymentResult =  _vnpay.GetPaymentResult(query);
+                var paymentId = _httpContextAccessor.HttpContext?.Session.GetInt32("PaymentId")??0;
                 var payment = await _unitOfWork.Payments.GetPaymentByIdAsync(paymentId);
 
                 if (paymentResult.IsSuccess)
