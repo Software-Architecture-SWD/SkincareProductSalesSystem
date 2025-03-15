@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SPSS.Repository.Enum;
 
 namespace SPSS.Entities
 {
@@ -17,18 +18,18 @@ namespace SPSS.Entities
         public virtual AppUser? AppUser { get; set; }
 
         [Required]
-        public string Status { get; set; } = string.Empty;
+        public OrderStatus Status { get; set; }
 
         public bool isDelete { get; set; } = false;
 
         [Required]
-        public decimal TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; } = 0;
 
         [Required]
-        public int ItemsCount { get; set; }
+        public int ItemsCount { get; set; } = 0;
 
         [Required]
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("Cart")]
         public int CartId { get; set; }

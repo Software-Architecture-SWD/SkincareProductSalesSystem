@@ -10,7 +10,7 @@ namespace SPSS.Service.Services.VNPayService
 {
     public interface IVNPayService
     {
-        Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress);
+        Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress, int paymentId);
         Task<PaymentResult> ProcessIpnAction(IQueryCollection query);
         Task<string> ProcessPaymentCallback(IQueryCollection query);
     }

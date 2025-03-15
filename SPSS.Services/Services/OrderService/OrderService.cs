@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SPSS.Entities;
 using SPSS.Repositories;
+using SPSS.Repository.Enum;
 
 public class OrderService : IOrderService
 {
@@ -22,7 +23,7 @@ public class OrderService : IOrderService
         var order = new Order
         {
             UserId = userId,
-            Status = "Pending",
+            Status = OrderStatus.Pending,
             TotalAmount = cart.TotalAmount,
             ItemsCount = cart.ItemsCount,
             OrderDate = DateTime.UtcNow,
@@ -56,7 +57,7 @@ public class OrderService : IOrderService
         return await _orderRepo.GetOrdersByUserIdAsync(userId);
     }
 
-    public async Task UpdateOrderStatusAsync(int orderId, string status)
+    public async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
     {
         var order = await _orderRepo.GetByIdAsync(orderId);
         if (order == null) throw new Exception("Order not found");

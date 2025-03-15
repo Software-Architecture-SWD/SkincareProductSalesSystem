@@ -12,6 +12,6 @@ namespace SPSS.Repository.Enum
         ProcessingPayment = 2,
         OnDelivery = 3,
         Completed = 4,
-        Canceled = 5
+        Canceled = 0
     }
 }

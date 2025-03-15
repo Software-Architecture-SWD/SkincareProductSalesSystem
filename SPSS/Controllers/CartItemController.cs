@@ -17,7 +17,15 @@ public class CartItemController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("{cartId}")]
+    [HttpGet ("{cartItemId}")]
+    public async Task <IActionResult> GetCartItem(int cartItemId)
+    {
+        var cartItem = await _cartItemService.GetCartItemByIdAsync(cartItemId);
+        var cartItemResponse = _mapper.Map<CartItemResponse>(cartItem);
+        return Ok(cartItemResponse);
+    }
+
+    [HttpGet("All/{cartId}")]
     public async Task<IActionResult> GetCartItems(int cartId)
     {
         var cartItems = await _cartItemService.GetCartItemsByCartIdAsync(cartId);

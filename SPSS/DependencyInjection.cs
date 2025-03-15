@@ -35,10 +35,12 @@ using SPSS.Service.Services.AnswerSheetService;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Service.Services.AnswerDetailService;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
 using SPSS.Repository.Repositories.ResultRepository;
 using SPSS.Service.Services.ResultService;
 using SPSS.Repository.Repositories.SkinTypeRepository;
 using SPSS.Service.Services.SkinTypeService;
+using SPSS.Service.Services.CategoryService;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -68,6 +70,7 @@ namespace SPSS
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
             services.AddScoped<IAnswerDetailRepository, AnswerDetailRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
             services.AddScoped<ISkinTypeRepository, SkinTypeRepository>();
 
@@ -82,6 +85,7 @@ namespace SPSS
             services.AddScoped<IAnswerDetailService, AnswerDetailService>();
             services.AddScoped<IResultService, ResultService>();
             services.AddScoped<ISkinTypeService, SkinTypeService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             //Cart
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartService, CartService>();

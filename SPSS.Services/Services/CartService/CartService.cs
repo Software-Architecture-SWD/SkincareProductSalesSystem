@@ -17,17 +17,15 @@ namespace SPSS.Services
         public async Task<bool> ClearCartAsync(int cartId)
         {
             var cartItems = await _unitOfWork.CartItems.GetCartItemsByCartIdAsync(cartId);
-
             if (!cartItems.Any()) return false;
 
-            foreach (var item in cartItems)
-            {
-                await _unitOfWork.CartItems.RemoveCartItemAsync(item.Id);
-            }
+            // Remove all cart items in bulk
+            await _unitOfWork.CartItems.RemoveRange(cartItems);
+
             var saved = await _unitOfWork.CompleteAsync();
-            if (saved == 0) return false;
-            return true;
+            return saved > 0;
         }
+
 
         public async Task<Cart> CreateCartAsync(Cart cart)
         {

@@ -16,7 +16,7 @@ namespace SPSS.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetProductList()
+        public async Task<IActionResult> GetBrandList()
         {
             try
             {

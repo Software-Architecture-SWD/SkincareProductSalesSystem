@@ -19,8 +19,10 @@ using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
 using SPSS.Repository.Repositories.ResultRepository;
 using SPSS.Repository.Repositories.SkinTypeRepository;
+
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -31,8 +33,7 @@ namespace SPSS.Repository.UnitOfWork
         , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository
         , ICartRepository _cartRepository, ICartItemRepository _cartItem
         , IOrderRepository _orderRepository, IOrderItemRepository _orderItemRepository
-        , IUserRepository _userRepository) : IUnitOfWork
-        , IResultRepository _resultRepository, ISkinTypeRepository _skinTypeRepository) : IUnitOfWork
+        , IUserRepository _userRepository, IPaymentRepository _paymentRepository, IResultRepository _resultRepository, ISkinTypeRepository _skinTypeRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
@@ -53,6 +54,8 @@ namespace SPSS.Repository.UnitOfWork
         public IOrderRepository Orders { get; } = _orderRepository;
         public IOrderItemRepository OrderItems { get; } = _orderItemRepository;
         public IUserRepository Users { get; } = _userRepository;
+
+        public IPaymentRepository Payments { get; } = _paymentRepository;
 
         public async Task<int> CompleteAsync()
         {
