@@ -35,6 +35,7 @@ using SPSS.Service.Services.AnswerSheetService;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Service.Services.AnswerDetailService;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
 using SPSS.Repository.Repositories.ResultRepository;
 using SPSS.Service.Services.ResultService;
 using SPSS.Repository.Repositories.SkinTypeRepository;
@@ -68,6 +69,7 @@ namespace SPSS
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
             services.AddScoped<IAnswerDetailRepository, AnswerDetailRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
             services.AddScoped<ISkinTypeRepository, SkinTypeRepository>();
 

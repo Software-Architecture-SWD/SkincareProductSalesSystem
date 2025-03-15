@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SPSS.Entities;
+using SPSS.Repository.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +18,16 @@ namespace SPSS.Service.Services.VNPayService
     public class VNPayService : IVNPayService
     {
         private readonly IVnpay _vnpay;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly ILogger<VNPayService> _logger;
 
-        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger)
+        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger, IUnitOfWork unitOfWork)
         {
             _vnpay = vnpay;
             _configuration = configuration;
             _logger = logger;
+            _unitOfWork = unitOfWork;
 
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
         }
@@ -60,7 +64,7 @@ namespace SPSS.Service.Services.VNPayService
             }
         }
 
-        public async Task<PaymentResult> ProcessIpnAction(IQueryCollection query)
+        public async Task<PaymentResult> ProcessIpnAction(IQueryCollection query, int paymentId)
         {
             if (query.Count == 0)
             {
@@ -71,16 +75,28 @@ namespace SPSS.Service.Services.VNPayService
             try
             {
                 var paymentResult =  _vnpay.GetPaymentResult(query);
+                var payment = await _unitOfWork.Payments.GetPaymentByIdAsync(paymentId);
 
                 if (paymentResult.IsSuccess)
                 {
                     _logger.LogInformation("Thanh toán thành công - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Cập nhật trạng thái đơn hàng vào DB
+                   
+                    payment.PaymentStatus = PaymentStatus.Success;
+                    payment.TransactionId = paymentResult.VnpayTransactionId.ToString();
+                    payment.PaymentDate = paymentResult.Timestamp;
+                    payment.CreatedAt = DateTime.UtcNow;
+
+
                 }
                 else
                 {
                     _logger.LogWarning("Thanh toán thất bại - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Xử lý khi thanh toán thất bại (ví dụ: hủy đơn hàng)
+                    payment.PaymentStatus = PaymentStatus.Failed;
+                    payment.CreatedAt = DateTime.UtcNow;
+
+
                 }
 
                 return paymentResult;
@@ -94,7 +110,7 @@ namespace SPSS.Service.Services.VNPayService
 
         }
 
-        public async Task<string> ProcessPaymentCallback (IQueryCollection query)
+        public async Task<string> ProcessPaymentCallback(IQueryCollection query)
         {
             _logger.LogInformation("Nhận Callback từ VNPAY với query: {Query}", query.ToString());
 
