@@ -12,33 +12,37 @@ namespace SPSS.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE or alter TRIGGER trg_UpdateCartTotalPrice
+            CREATE OR ALTER TRIGGER trg_UpdateCartTotalPrice
             ON CartItems
             AFTER INSERT, UPDATE, DELETE
             AS
             BEGIN
                 SET NOCOUNT ON;
 
-                -- Update the total amount and item count in the Cart table
-                UPDATE Ci
-	            SET Ci.TotalPrice = COALESCE((
-		            SELECT SUM(CiSub.Quantity * P.Price)
-		            FROM CartItems CiSub
-		            INNER JOIN Products P ON CiSub.ProductId = P.Id
-		            WHERE CiSub.Id = Ci.Id
-	            ), 0)
-	            FROM CartItems Ci;
+                -- Update TotalPrice for each CartItem using Product Price
+                UPDATE CI
+                SET CI.TotalPrice = COALESCE(P.Price * CI.Quantity, 0)
+                FROM CartItems CI
+                INNER JOIN Products P ON CI.ProductId = P.Id;
 
-	            UPDATE C
+                -- Update the Carts table to reflect the total values
+                UPDATE C
                 SET 
-                    C.ItemsCount = COALESCE(ItemCount,0),
-		            C.TotalAmount = COALESCE(TotalPrice,0)
+                    C.ItemsCount = COALESCE(CI.ItemCount, 0),
+                    C.TotalAmount = COALESCE(CI.TotalPrice, 0)
                 FROM Carts C
-	            INNER JOIN (
-                    SELECT CartId, COUNT(Id) AS ItemCount, Sum(TotalPrice) As TotalPrice
-                    FROM CartItems
+                LEFT JOIN (
+                    SELECT CartId, COUNT(CI.Id) AS ItemCount, SUM(Quantity * P.Price) AS TotalPrice
+                    FROM CartItems CI
+                    INNER JOIN Products P ON CI.ProductId = P.Id
                     GROUP BY CartId
-                ) Ci ON C.Id = CI.CartId;
+                ) CI ON C.Id = CI.CartId;
+
+                -- Ensure carts with no items are reset to zero
+                UPDATE C
+                SET C.ItemsCount = 0, C.TotalAmount = 0
+                FROM Carts C
+                WHERE NOT EXISTS (SELECT 1 FROM CartItems CI WHERE CI.CartId = C.Id);
             END;");
         }
 

@@ -21,6 +21,17 @@ namespace SPSS.Service.Services.CartItemService
             _logger = logger;
         }
 
+        public async Task<CartItem> GetCartItemByIdAsync(int cartItemId)
+        {
+            var cartItem = await _unitOfWork.CartItems.GetCartItemByIdAsync(cartItemId);
+            if (cartItem == null)
+            {
+                _logger.LogWarning("Cart item with ID {Id} not found.", cartItemId);
+                throw new KeyNotFoundException($"Cart item with ID {cartItemId} not found.");
+            }
+            return cartItem;
+        }
+
         public async Task<CartItem> AddToCartAsync(int cartId, int productId)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
