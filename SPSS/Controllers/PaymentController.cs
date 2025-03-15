@@ -26,7 +26,7 @@ namespace SPSS.API.Controllers
         }
 
         [HttpGet("result")]
-        public async Task<ActionResult> IpnAction()
+        public async Task<ActionResult> IpnAction(int paymentId)
         {
             if (!Request.QueryString.HasValue)
             {
@@ -35,7 +35,7 @@ namespace SPSS.API.Controllers
 
             try
             {
-                var paymentResult =  _vnPayService.ProcessIpnAction(Request.Query);
+                var paymentResult = _vnPayService.ProcessIpnAction(Request.Query,paymentId);
 
                 if (paymentResult.IsCompleted)
                 {

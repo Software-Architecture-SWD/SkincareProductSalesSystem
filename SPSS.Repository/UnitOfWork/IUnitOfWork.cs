@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -36,6 +37,7 @@ namespace SPSS.Repository.UnitOfWork
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
         IUserRepository Users { get; }
+        IPaymentRepository Payments { get; }
 
         Task<int> CompleteAsync();
     }

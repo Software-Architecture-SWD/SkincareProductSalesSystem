@@ -35,6 +35,7 @@ using SPSS.Service.Services.AnswerSheetService;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Service.Services.AnswerDetailService;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.PaymentRepository;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -64,6 +65,7 @@ namespace SPSS
             services.AddScoped<IBrandRepository, BrandRepository>();
             services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
             services.AddScoped<IAnswerDetailRepository, AnswerDetailRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             // Đăng ký các Services
             services.AddScoped<IProductService, ProductService>();
