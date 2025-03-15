@@ -11,12 +11,12 @@ namespace SPSS.API.Controllers
     public class PaymentController(IVNPayService _vnPayService) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description)
+        public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description, int paymentId)
         {
             try
             {
                 var ipAddress = NetworkHelper.GetIpAddress(HttpContext);
-                var paymentUrl = await _vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress);
+                var paymentUrl = await _vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, paymentId);
                 return Created(paymentUrl, paymentUrl);
             }
             catch (Exception ex)
@@ -26,7 +26,7 @@ namespace SPSS.API.Controllers
         }
 
         [HttpGet("result")]
-        public async Task<ActionResult> IpnAction(int paymentId)
+        public async Task<ActionResult> IpnAction()
         {
             if (!Request.QueryString.HasValue)
             {
@@ -35,7 +35,7 @@ namespace SPSS.API.Controllers
 
             try
             {
-                var paymentResult = _vnPayService.ProcessIpnAction(Request.Query,paymentId);
+                var paymentResult = _vnPayService.ProcessIpnAction(Request.Query);
 
                 if (paymentResult.IsCompleted)
                 {

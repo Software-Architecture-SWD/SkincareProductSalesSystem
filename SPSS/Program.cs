@@ -106,8 +106,13 @@ namespace SPSS
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-
-
+            builder.Services.AddDistributedMemoryCache(); // Cần thiết cho session
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian timeout của session
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
 
             builder.Services.AddCors(options =>
@@ -146,6 +151,7 @@ namespace SPSS
 
             }
 
+            app.UseSession();
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
             app.UseAuthentication();
