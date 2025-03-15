@@ -12,8 +12,8 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250314130630_DBlocal")]
-    partial class DBlocal
+    [Migration("20250315062107_UpdateInitial")]
+    partial class UpdateInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -533,7 +533,12 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", null, t =>
+                        {
+                            t.HasTrigger("trg_UpdateCartTotalPrice");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("SPSS.Entities.Category", b =>
@@ -695,9 +700,8 @@ namespace SPSS.Repository.Migrations
                     b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)

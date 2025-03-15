@@ -5,8 +5,9 @@
 namespace SPSS.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class triggers : Migration
+    public partial class UpdateTrigger : Migration
     {
+        /// <inheritdoc />
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -46,5 +47,6 @@ namespace SPSS.Repository.Migrations
         {
             migrationBuilder.Sql("DROP TRIGGER IF EXISTS trg_UpdateCartTotalPrice;");
         }
+
     }
 }
