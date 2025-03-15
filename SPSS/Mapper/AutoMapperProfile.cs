@@ -32,6 +32,11 @@ namespace SPSS.Mapper
                 .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
             CreateMap<AnswerDetailRequest, AnswerDetail>();
             CreateMap<AnswerDetail, AnswerDetailResponse>();
+            CreateMap<Cart, CartResponse>()
+                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.AppUser.NormalizedUserName));
+            CreateMap<CartItem, CartItemResponse>()
+                .ForMember(ci => ci.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
+                .ForMember(ci => ci.ImageUrl, opt => opt.MapFrom(src => src.Product.ImageUrl));
             CreateMap<Result, ResultResponse>().ForMember(dest => dest.SkinTypeName, opt => opt.MapFrom(src => src.SkinType != null ? src.SkinType.Name : null)); ;
             CreateMap<ResultRequest, Result>().ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
             CreateMap<SkinType, SkinTypeResponse>();

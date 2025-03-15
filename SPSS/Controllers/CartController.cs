@@ -1,46 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SPSS.Dto.Response;
 using SPSS.Entities;
+using SPSS.Service.Dto.Response;
 using SPSS.Services;
 
-namespace SPSS.Controllers
+[Route("api/cart")]
+[ApiController]
+public class CartController : ControllerBase
 {
-    [Route("api/cart")]
-    [ApiController]
-    public class CartController : ControllerBase
+    private readonly ICartService _cartService;
+    private readonly IMapper _mapper;
+
+    public CartController(ICartService cartService, IMapper mapper)
     {
-        private readonly ICartService _cartService;
+        _cartService = cartService;
+        _mapper = mapper;
+    }
 
-        public CartController(ICartService cartService)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetCart(string userId)
+    {
+        var cart = await _cartService.GetCartByUserIdAsync(userId);
+        if (cart == null)
         {
-            _cartService = cartService;
+            cart = await _cartService.CreateCartAsync(new Cart { UserId = userId, TotalAmount = 0, ItemsCount = 0 }); 
         }
+        var cartResponse = _mapper.Map<CartResponse>(cart);
+        return Ok(cartResponse);
+    }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetCart(string userId)
+    [HttpDelete("{cartId}/clear")]
+    public async Task<IActionResult> ClearCart(int cartId)
+    {
+        var success = await _cartService.ClearCartAsync(cartId);
+        if (!success)
         {
-            var cart = await _cartService.GetOrCreateCartAsync(userId);
-            return Ok(cart);
+            return NotFound("Cart not found or already empty.");
         }
-
-        [HttpPost("add")]
-        public async Task<IActionResult> AddToCart([FromBody] CartItem cartItem, [FromQuery] string userId)
-        {
-            await _cartService.AddToCartAsync(userId, cartItem);
-            return Ok(new { message = "Item added to cart." });
-        }
-
-        [HttpDelete("remove/{userId}/{cartItemId}")]
-        public async Task<IActionResult> RemoveFromCart(string userId, int cartItemId)
-        {
-            await _cartService.RemoveFromCartAsync(userId, cartItemId);
-            return Ok(new { message = "Item removed from cart." });
-        }
-
-        [HttpGet("total/{userId}")]
-        public async Task<IActionResult> GetTotalAmount(string userId)
-        {
-            var total = await _cartService.GetTotalAmountAsync(userId);
-            return Ok(new { total });
-        }
+        return Ok("Cart cleared successfully.");
     }
 }

@@ -120,11 +120,15 @@ namespace SPSS.Data
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<CartItem>()
-                .HasOne(ci => ci.Product)
-                .WithMany(p => p.CartItems)
-                .HasForeignKey(ci => ci.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<CartItem>(entry =>
+            {
+                entry.ToTable("CartItems", tb => tb.HasTrigger("trg_UpdateCartTotalPrice"));
+
+                entry.HasOne(ci => ci.Product)
+                     .WithMany(p => p.CartItems)
+                     .HasForeignKey(ci => ci.ProductId)
+                     .OnDelete(DeleteBehavior.Restrict);
+            });
 
             builder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
