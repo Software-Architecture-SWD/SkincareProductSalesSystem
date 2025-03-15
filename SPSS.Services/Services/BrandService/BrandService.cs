@@ -50,7 +50,7 @@ namespace SPSS.Service.Services.BrandService
         {
             try
             {
-                _logger.LogInformation("Fetching all products.");
+                _logger.LogInformation("Fetching all brands.");
                 return await _unitOfWork.Brands.GetAllAsync();
             }
             catch (Exception ex)

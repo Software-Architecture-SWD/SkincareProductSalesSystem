@@ -31,14 +31,21 @@ namespace SPSS.Repository.Repositories.CategoryRepositoty
         }
 
     
-        public async Task DeleteAsync(Category category)
+        public async Task DeleteAsync(int id)
         {
-            _context.Categories.Remove(category); 
-            await _context.SaveChangesAsync();  
+            var category = await _context.Categories.FindAsync(id);
+            category.isDelete = true;
+            await _context.SaveChangesAsync();
         }
+
+        public async Task<Category> GetByIdAsync(int id)
+        {
+            return await _context.Categories.FindAsync(id);
+        }
+
         public IQueryable<Category> Query()
         {
-            return _context.Categories.AsQueryable();  
+            return _context.Categories.AsQueryable();
         }
     }
 
