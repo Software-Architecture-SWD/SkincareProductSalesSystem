@@ -8,10 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SPSS.Service.Services.AnswerDetailService;
 using SPSS.Service.Services.AnswerService;
+using SPSS.Service.Services.ResultService;
 
 namespace SPSS.Service.Services.AnswerSheetService
 {
-    public class AnswerSheetService(IUnitOfWork _unitOfWork, ILogger<AnswerSheetService> _logger, IAnswerDetailService _answerDetailService, IAnswerService _answerService) : IAnswerSheetService
+    public class AnswerSheetService(IUnitOfWork _unitOfWork, ILogger<AnswerSheetService> _logger, IAnswerDetailService _answerDetailService, IAnswerService _answerService, IResultService _resultService) : IAnswerSheetService
     {
         public async Task<IEnumerable<AnswerSheet>> GetAllAsync()
         {
@@ -108,7 +109,7 @@ namespace SPSS.Service.Services.AnswerSheetService
                 throw;
             }
         }
-        public async Task<IEnumerable<AnswerSheet>> SubmitAnswerSheetsAsync(int answerSheetId, List<int> answerIds)
+        public async Task<(string skintype, int totalPoints)> SubmitAnswerSheetsAsync(int answerSheetId, List<int> answerIds)
         {
             try
             {
@@ -118,12 +119,14 @@ namespace SPSS.Service.Services.AnswerSheetService
                 var answerSheet = await _unitOfWork.AnswerSheets.GetByIdAsync(answerSheetId);
                 if (answerSheet == null)
                 {
+                    _logger.LogInformation("AnswerSheet with ID {AnswerSheetId} not found.", answerSheetId);
                     throw new Exception($"AnswerSheet with ID {answerSheetId} not found.");
                 }
                 var totalPoints = await _answerService.SumPointsAsync(answerIds);
                 answerSheet.TotalPoint = totalPoints;
                 await _unitOfWork.AnswerSheets.UpdateAsync(answerSheet);
-                return new List<AnswerSheet> { answerSheet };
+                var skintype = await _resultService.GetSkinTypeNameByPointAsync(totalPoints);
+                return (skintype, totalPoints);
             }
             catch (Exception ex)
             {

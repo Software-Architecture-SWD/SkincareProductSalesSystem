@@ -41,6 +41,7 @@ namespace SPSS.Data
         public DbSet<MessageStatus> MessageStatuses { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<BookingInfo> BookingInfos { get; set; }
+        public DbSet<Result> Results { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

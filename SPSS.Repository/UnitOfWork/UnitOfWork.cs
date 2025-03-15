@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using SPSS.Repository.Repositories.BrandReposiotry;
 using SPSS.Repository.Repositories.AnswerSheetRepository;
 using SPSS.Repository.Repositories.AnswerDetailRepository;
+using SPSS.Repository.Repositories.ResultRepository;
+using SPSS.Repository.Repositories.SkinTypeRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -20,7 +22,8 @@ namespace SPSS.Repository.UnitOfWork
         , IQuestionRepository _questionRepository, IFeedbackRepository _feedbackRepository
         , IPromotionRepository _promotionRepository, ICategoryRepository _categoryRepository
         , IAnswerRepository _answerRepository, IBrandRepository _brandRepository
-        , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository) : IUnitOfWork
+        , IAnswerSheetRepository _answerSheetRepository, IAnswerDetailRepository _answerDetailRepository
+        , IResultRepository _resultRepository, ISkinTypeRepository _skinTypeRepository) : IUnitOfWork
     {
         public IProductRepository Products { get; } = _productRepository;
         public IQuestionRepository Questions { get; } = _questionRepository;
@@ -32,6 +35,9 @@ namespace SPSS.Repository.UnitOfWork
 
         public IBrandRepository Brands { get; } = _brandRepository;
         public IAnswerDetailRepository AnswerDetails { get; } = _answerDetailRepository;
+        public IResultRepository Results { get; } = _resultRepository;
+        public ISkinTypeRepository SkinTypes { get; } = _skinTypeRepository;
+
 
         public async Task<int> CompleteAsync()
         {

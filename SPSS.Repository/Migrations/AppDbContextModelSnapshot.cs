@@ -976,7 +976,7 @@ namespace SPSS.Repository.Migrations
                     b.HasIndex("SkinTypeId")
                         .IsUnique();
 
-                    b.ToTable("Result");
+                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("SPSS.Entities.Routines", b =>
