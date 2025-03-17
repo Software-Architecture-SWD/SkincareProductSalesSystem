@@ -12,6 +12,7 @@ namespace SPSS.Repository.Repositories.CartItemService
         Task<CartItem> GetCartItemByIdAsync(int cartItemId);
         Task<List<CartItem>> GetCartItemsByCartIdAsync(int cartId);
         Task UpdateCartItemAsync(CartItem cartItem, int quantity);
-        Task RemoveRange(IEnumerable<CartItem> cartItems);
+        Task RemoveRangeAsync(IEnumerable<CartItem> cartItems);
+        Task <IEnumerable<CartItem>> GetCartItemsByIdAsync(IEnumerable<int> cartItemIds);
     }
 }

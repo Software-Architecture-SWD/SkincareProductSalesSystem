@@ -43,6 +43,8 @@ namespace SPSS.Mapper
             CreateMap<SkinTypeRequest, SkinType>().ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false));
             CreateMap<CategoryRequest, Category>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<Category, CategoryResponse>();
+            CreateMap<Order, OrderResponse>()
+                .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.UserName));
         }
     }
 }

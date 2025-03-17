@@ -10,7 +10,7 @@ namespace SPSS.Entities
         public int Id { get; set; }
 
         [ForeignKey("Promotion")]
-        public int PromotionId { get; set; }
+        public int? PromotionId { get; set; }
         public Promotion? Promotion { get; set; }
 
         [ForeignKey("AppUser")]
@@ -29,13 +29,11 @@ namespace SPSS.Entities
         public int ItemsCount { get; set; } = 0;
 
         [Required]
-        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-
-        [ForeignKey("Cart")]
-        public int CartId { get; set; }
-        public Cart? Cart { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? PaymentDate { get; set; } = null;
+        public DateTime? CompletedDate { get; set; } = null;
+        public DateTime? CanceledDate { get; set; } = null;
 
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public virtual Payment? Payment { get; set; }

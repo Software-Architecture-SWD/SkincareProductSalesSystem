@@ -17,13 +17,6 @@ namespace SPSS.Controllers
             _orderItemService = orderItemService;
         }
 
-        [HttpPost("add")]
-        public async Task<IActionResult> AddOrderItem([FromBody] OrderItem orderItem)
-        {
-            await _orderItemService.AddOrderItemAsync(orderItem);
-            return Ok(new { message = "Order item added." });
-        }
-
         [HttpDelete("remove/{orderItemId}")]
         public async Task<IActionResult> RemoveOrderItem(int orderItemId)
         {
