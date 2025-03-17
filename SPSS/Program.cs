@@ -114,7 +114,6 @@ namespace SPSS
                 options.Cookie.IsEssential = true;
             });
 
-
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
