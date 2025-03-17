@@ -1,68 +1,84 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 using SPSS.Entities;
 using SPSS.Repositories;
 using SPSS.Repository.Enum;
+using SPSS.Repository.UnitOfWork;
+using SPSS.Service.Dto.Response;
+using SPSS.Services.Services.CartItemService;
+using SPSS.Services.Services.OrderItemService;
 
 public class OrderService : IOrderService
 {
-    private readonly IOrderRepository _orderRepo;
-    private readonly ICartRepository _cartRepo;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<OrderService> _logger;
+    private readonly IOrderItemService _orderItemService;
+    private readonly ICartItemService _cartItemService;
+    private readonly IMapper _mapper;
 
-    public OrderService(IOrderRepository orderRepo, ICartRepository cartRepo)
+    public OrderService(IUnitOfWork unitOfWork, ILogger<OrderService> logger, IOrderItemService orderItemService, ICartItemService cartItemService, IMapper mapper)
     {
-        _orderRepo = orderRepo;
-        _cartRepo = cartRepo;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+        _orderItemService = orderItemService;
+        _cartItemService = cartItemService;
+        _mapper = mapper;
     }
 
-    public async Task<Order> CreateOrderFromCartAsync(string userId)
+    public async Task<OrderResponse> CreateOrderAsync(string userId, IEnumerable<int> cartItemIds)
     {
-        var cart = await _cartRepo.GetCartByUserIdAsync(userId);
+        var user = await _unitOfWork.Users.GetUserById(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("User with ID {Id} does not exist", userId);
+            throw new InvalidOperationException($"User with ID {userId} does not exist.");
+        }
+
+        var cart = await _unitOfWork.Carts.GetCartByUserIdAsync(userId);
         if (cart == null || !cart.CartItems.Any())
-            throw new Exception("Cart is empty or does not exist");
+        {
+            _logger.LogWarning("Cart is empty or does not exist.");
+            throw new InvalidOperationException("Cart is empty or does not exist.");
+        }
+
+        var selectedCartItems = cart.CartItems
+            .Where(ci => cartItemIds.Contains(ci.Id))
+            .ToList();
+        if (!selectedCartItems.Any())
+        {
+            _logger.LogWarning("No valid cart items selected.");
+            throw new InvalidOperationException("No valid cart items selected.");
+        }
 
         var order = new Order
         {
             UserId = userId,
             Status = OrderStatus.Pending,
-            TotalAmount = cart.TotalAmount,
-            ItemsCount = cart.ItemsCount,
-            OrderDate = DateTime.UtcNow,
-            CartId = cart.Id,
-            OrderItems = cart.CartItems.Select(ci => new OrderItem
-            {
-                ProductId = ci.ProductId,
-                Quantity = ci.Quantity,
-                TotalPrice = ci.TotalPrice
-            }).ToList()
+            isDelete = false,
         };
 
-        var createdOrder = await _orderRepo.CreateOrderAsync(order);
+        var createdOrder = _mapper.Map <OrderResponse> (await _unitOfWork.Orders.CreateOrderAsync(order));
 
-        // Clear the cart after order creation
-        cart.CartItems.Clear();
-        cart.TotalAmount = 0;
-        cart.ItemsCount = 0;
-        await _cartRepo.UpdateCartAsync(cart);
+        // Call OrderItemService to create OrderItems separately
+        var orderItems = await _orderItemService.CreateOrderItemsAsync(createdOrder.Id, selectedCartItems);
+
+        // Delete only selected cart items after order is successfully created
+        var cartItemCheck = await _cartItemService.RemoveCartItemsAsync(cartItemIds);
 
         return createdOrder;
     }
 
+
+
     public async Task<Order> GetOrderByIdAsync(int orderId)
     {
-        return await _orderRepo.GetByIdAsync(orderId);
+        return await _unitOfWork.Orders.GetByIdAsync(orderId);
     }
 
     public async Task<IEnumerable<Order>> GetUserOrdersAsync(string userId)
     {
-        return await _orderRepo.GetOrdersByUserIdAsync(userId);
-    }
-
-    public async Task UpdateOrderStatusAsync(int orderId, OrderStatus status)
-    {
-        var order = await _orderRepo.GetByIdAsync(orderId);
-        if (order == null) throw new Exception("Order not found");
-
-        order.Status = status;
-        await _orderRepo.UpdateOrderAsync(order);
+        return await _unitOfWork.Orders.GetOrdersByUserIdAsync(userId);
     }
 }

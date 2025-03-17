@@ -9,6 +9,7 @@ namespace SPSS.Services.Services.CartItemService
         Task<CartItem> AddToCartAsync(int cartId, int productId);
         Task<bool> RemoveCartItemAsync(int cartItemId);
         Task<CartItem> UpdateCartItemAsync(int cartItemId, int quantity);
+        Task<bool> RemoveCartItemsAsync(IEnumerable<int> cartItemIds);
     }
 }
 

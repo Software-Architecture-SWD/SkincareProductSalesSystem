@@ -7,7 +7,7 @@ namespace SPSS.Services.Services.OrderItemService
 {
     public interface IOrderItemService
     {
-        Task AddOrderItemAsync(OrderItem orderItem);
+        Task<bool> CreateOrderItemsAsync(int orderId, IEnumerable<CartItem> cartItems);
         Task RemoveOrderItemAsync(int orderItemId);
         Task<OrderItem> GetOrderItemByIdAsync(int orderItemId);
         Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId);

@@ -102,12 +102,6 @@ namespace SPSS.Data
                 .HasForeignKey<Result>(r => r.SkinTypeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Order>()
-                .HasOne(o => o.Cart)
-                .WithMany(c => c.Orders)
-                .HasForeignKey(o => o.CartId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.Entity<OrderItem>()
                 .HasOne(oi => oi.Product)
                 .WithMany(p => p.OrderItems)

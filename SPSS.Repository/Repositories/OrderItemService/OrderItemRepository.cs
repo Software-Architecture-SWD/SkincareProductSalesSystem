@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SPSS.Data;
 using SPSS.Entities;
 using SPSS.Repository.Entities;
 
@@ -9,33 +11,38 @@ namespace SPSS.Repository.Repositories.OrderItemService
 {
     public class OrderItemRepository : IOrderItemRepository
     {
-        private readonly List<OrderItem> _orderItems = new List<OrderItem>();
+        private readonly AppDbContext _context;
 
-        public Task AddOrderItemAsync(OrderItem orderItem)
+        public OrderItemRepository(AppDbContext context)
         {
-            _orderItems.Add(orderItem);
-            return Task.CompletedTask;
+            _context = context;
+        }
+
+        public async Task AddOrderItemsAsync(IEnumerable<OrderItem> orderItems)
+        {
+            _context.AddRange(orderItems);
+            await _context.SaveChangesAsync();
         }
 
         public Task RemoveOrderItemAsync(int orderItemId)
         {
-            var item = _orderItems.FirstOrDefault(i => i.Id == orderItemId);
+            var item = _context.OrderItems.FirstOrDefault(i => i.Id == orderItemId);
             if (item != null)
             {
-                _orderItems.Remove(item);
+                _context.OrderItems.Remove(item);
             }
             return Task.CompletedTask;
         }
 
         public Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
         {
-            var item = _orderItems.FirstOrDefault(i => i.Id == orderItemId);
+            var item = _context.OrderItems.FirstOrDefault(i => i.Id == orderItemId);
             return Task.FromResult(item);
         }
 
         public Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
-            var items = _orderItems.Where(i => i.OrderId == orderId).ToList();
+            var items = _context.OrderItems.Where(i => i.OrderId == orderId).ToList();
             return Task.FromResult(items);
         }
     }

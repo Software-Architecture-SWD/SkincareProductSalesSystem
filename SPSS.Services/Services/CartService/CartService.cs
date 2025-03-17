@@ -20,7 +20,7 @@ namespace SPSS.Services
             if (!cartItems.Any()) return false;
 
             // Remove all cart items in bulk
-            await _unitOfWork.CartItems.RemoveRange(cartItems);
+            await _unitOfWork.CartItems.RemoveRangeAsync(cartItems);
 
             var saved = await _unitOfWork.CompleteAsync();
             return saved > 0;

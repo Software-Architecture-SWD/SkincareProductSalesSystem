@@ -135,5 +135,14 @@ namespace SPSS.Service.Services.CartItemService
             await _unitOfWork.CartItems.UpdateCartItemAsync(cartItem, quantity);
             return cartItem;
         }
+
+        public async Task<bool> RemoveCartItemsAsync(IEnumerable<int> cartItemIds)
+        {
+            if (cartItemIds == null) return false;
+            var cartItems = await _unitOfWork.CartItems.GetCartItemsByIdAsync(cartItemIds);
+            await _unitOfWork.CartItems.RemoveRangeAsync(cartItems);
+            var saved = await _unitOfWork.CompleteAsync();
+            return saved > 0;
+        }
     }
 }

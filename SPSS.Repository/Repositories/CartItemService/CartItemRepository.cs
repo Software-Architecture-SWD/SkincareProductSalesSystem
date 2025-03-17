@@ -47,9 +47,21 @@ namespace SPSS.Repository.Repositories.CartItemService
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveRange(IEnumerable<CartItem> cartItems)
+        public async Task RemoveRangeAsync(IEnumerable<CartItem> cartItems)
         {
             _context.CartItems.RemoveRange(cartItems);
+            await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<CartItem>> GetCartItemsByIdAsync(IEnumerable<int> cartItemIds)
+        {
+            if (cartItemIds == null || !cartItemIds.Any()) return Enumerable.Empty<CartItem>();
+
+            return await _context.CartItems
+                .Where(i => cartItemIds.Contains(i.Id))
+                .Include(i => i.Product)
+                .ToListAsync();
+        }
+
     }
 }

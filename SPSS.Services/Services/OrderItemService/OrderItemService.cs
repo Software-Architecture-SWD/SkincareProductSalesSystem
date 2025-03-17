@@ -16,11 +16,6 @@ namespace SPSS.Services.Services.OrderItemService
             _unitOfWork = unitOfWork;
         }
 
-        public Task AddOrderItemAsync(OrderItem orderItem)
-        {
-            return _unitOfWork.OrderItems.AddOrderItemAsync(orderItem);
-        }
-
         public Task RemoveOrderItemAsync(int orderItemId)
         {
             return _unitOfWork.OrderItems.RemoveOrderItemAsync(orderItemId);
@@ -34,6 +29,20 @@ namespace SPSS.Services.Services.OrderItemService
         public Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
             return _unitOfWork.OrderItems.GetOrderItemsByOrderIdAsync(orderId);
+        }
+
+        public async Task<bool> CreateOrderItemsAsync(int orderId, IEnumerable<CartItem> cartItems)
+        {
+            var orderItems = cartItems.Select(ci => new OrderItem
+            {
+                OrderId = orderId,
+                ProductId = ci.ProductId,
+                Quantity = ci.Quantity,
+                TotalPrice = ci.TotalPrice
+            }).ToList();
+
+            await _unitOfWork.OrderItems.AddOrderItemsAsync(orderItems);
+            return true;
         }
     }
 }

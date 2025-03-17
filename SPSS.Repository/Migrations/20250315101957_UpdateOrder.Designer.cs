@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SPSS.Data;
 
@@ -11,9 +12,11 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250315101957_UpdateOrder")]
+    partial class UpdateOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -685,6 +688,9 @@ namespace SPSS.Repository.Migrations
                     b.Property<DateTime?>("CanceledDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CartId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CompletedDate")
                         .HasColumnType("datetime2");
 
@@ -697,7 +703,7 @@ namespace SPSS.Repository.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PromotionId")
+                    b.Property<int>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -715,6 +721,8 @@ namespace SPSS.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("PromotionId");
 
@@ -1396,9 +1404,15 @@ namespace SPSS.Repository.Migrations
 
             modelBuilder.Entity("SPSS.Entities.Order", b =>
                 {
+                    b.HasOne("SPSS.Entities.Cart", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("SPSS.Entities.Promotion", "Promotion")
                         .WithMany()
-                        .HasForeignKey("PromotionId");
+                        .HasForeignKey("PromotionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SPSS.Entities.AppUser", "AppUser")
                         .WithMany("Orders")
@@ -1642,6 +1656,8 @@ namespace SPSS.Repository.Migrations
             modelBuilder.Entity("SPSS.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("SPSS.Entities.Category", b =>
