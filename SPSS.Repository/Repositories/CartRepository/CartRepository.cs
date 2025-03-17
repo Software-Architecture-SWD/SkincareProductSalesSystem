@@ -8,7 +8,7 @@ namespace SPSS.Repositories
     {
         public async Task<Cart> GetCartByUserIdAsync(string userId)
         {
-            return await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+            return await _context.Carts.Where(c => c.UserId == userId).Include(c => c.CartItems).FirstOrDefaultAsync();
         }
 
         public async Task<Cart> AddCartAsync(Cart cart)

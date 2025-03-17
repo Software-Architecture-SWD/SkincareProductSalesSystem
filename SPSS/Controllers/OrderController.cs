@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Entities;
 using SPSS.Repository.Enum;
+using SPSS.Service.Dto.Request;
+using SPSS.Service.Dto.Response;
+using SPSS.Service.Services.ProductService;
 using System.Security.Claims;
 
 [Route("api/[controller]")]
@@ -10,56 +14,35 @@ using System.Security.Claims;
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
+    private readonly IMapper _mapper;
 
-    public OrderController(IOrderService orderService)
+    public OrderController(IOrderService orderService, IMapper mapper)
     {
         _orderService = orderService;
+        _mapper = mapper;
     }
 
-    //[HttpPost("create/{userId}")]
-    //public async Task<IActionResult> CreateOrder(string userId)
-    //{
-    //    try
-    //    {
-    //        var order = await _orderService.CreateOrderAsync(new Order { UserId = userId, Status = OrderStatus.Pending });
-    //        return Ok(order);
-    //    }
-    //    catch (Exception ex)
-    //    {   
-    //        return BadRequest(new { message = ex.Message });
-    //    }
-    //}
+    [HttpPost("{userId}")]
+    public async Task<IActionResult> CreateOrder(string userId, [FromBody] CreateOrderRequest request)
+    {
+        try
+        {
+            var order = await _orderService.CreateOrderAsync(userId, request.CartItemIds);
+            if (order == null) return BadRequest(new { message = "Failed to create order." });
+            return Ok(order);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
     [HttpGet("{orderId}")]
     public async Task<IActionResult> GetOrderById(int orderId)
     {
         var order = await _orderService.GetOrderByIdAsync(orderId);
         if (order == null) return NotFound();
-
-        return Ok(order);
-    }
-
-    [HttpGet("user-orders")]
-    public async Task<IActionResult> GetUserOrders()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null) return Unauthorized();
-
-        var orders = await _orderService.GetUserOrdersAsync(userId);
-        return Ok(orders);
-    }
-
-    [HttpPut("{orderId}/status")]
-    public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatus status)
-    {
-        try
-        {
-            await _orderService.UpdateOrderStatusAsync(orderId, status);
-            return Ok(new { message = "Order status updated" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var orderResponse = _mapper.Map<OrderResponse>(order);
+        return Ok(orderResponse);
     }
 }

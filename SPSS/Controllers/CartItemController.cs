@@ -29,7 +29,7 @@ public class CartItemController : ControllerBase
     public async Task<IActionResult> GetCartItems(int cartId)
     {
         var cartItems = await _cartItemService.GetCartItemsByCartIdAsync(cartId);
-        var cartItemsResponse = _mapper.Map<List<CartItemResponse>>(cartItems);
+        var cartItemsResponse = _mapper.Map<IEnumerable<CartItemResponse>>(cartItems);
         return Ok(cartItemsResponse);
     }
 
