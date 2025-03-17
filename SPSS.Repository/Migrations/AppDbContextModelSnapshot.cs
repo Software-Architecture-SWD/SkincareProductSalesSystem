@@ -1110,8 +1110,8 @@ namespace SPSS.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<TimeSpan>("End_time")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("End_time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ExpertId")
                         .IsRequired()
@@ -1121,8 +1121,8 @@ namespace SPSS.Repository.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<TimeSpan>("Start_time")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("Start_time")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

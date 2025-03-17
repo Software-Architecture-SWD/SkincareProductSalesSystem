@@ -12,8 +12,8 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250315101957_UpdateOrder")]
-    partial class UpdateOrder
+    [Migration("20250317143207_addIntitial")]
+    partial class addIntitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -688,9 +688,6 @@ namespace SPSS.Repository.Migrations
                     b.Property<DateTime?>("CanceledDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CartId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("CompletedDate")
                         .HasColumnType("datetime2");
 
@@ -703,7 +700,7 @@ namespace SPSS.Repository.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PromotionId")
+                    b.Property<int?>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -721,8 +718,6 @@ namespace SPSS.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CartId");
 
                     b.HasIndex("PromotionId");
 
@@ -1118,8 +1113,8 @@ namespace SPSS.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<TimeSpan>("End_time")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("End_time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ExpertId")
                         .IsRequired()
@@ -1129,8 +1124,8 @@ namespace SPSS.Repository.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<TimeSpan>("Start_time")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("Start_time")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -1404,15 +1399,9 @@ namespace SPSS.Repository.Migrations
 
             modelBuilder.Entity("SPSS.Entities.Order", b =>
                 {
-                    b.HasOne("SPSS.Entities.Cart", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("CartId");
-
                     b.HasOne("SPSS.Entities.Promotion", "Promotion")
                         .WithMany()
-                        .HasForeignKey("PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PromotionId");
 
                     b.HasOne("SPSS.Entities.AppUser", "AppUser")
                         .WithMany("Orders")
@@ -1656,8 +1645,6 @@ namespace SPSS.Repository.Migrations
             modelBuilder.Entity("SPSS.Entities.Cart", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("SPSS.Entities.Category", b =>

@@ -5,10 +5,8 @@
 namespace SPSS.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateTrigger : Migration
+    public partial class addTrigger : Migration
     {
-        /// <inheritdoc />
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
