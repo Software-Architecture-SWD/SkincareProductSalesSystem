@@ -13,7 +13,7 @@ namespace SPSS.Entities
         public virtual AppUser? User1 { get; set; }
 
         [ForeignKey("User2")]
-        public required string UserId2 { get; set; }
+        public string? UserId2 { get; set; }
         public virtual AppUser? User2 { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

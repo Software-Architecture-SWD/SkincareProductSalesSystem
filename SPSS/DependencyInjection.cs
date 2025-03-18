@@ -42,6 +42,8 @@ using SPSS.Repository.Repositories.SkinTypeRepository;
 using SPSS.Service.Services.SkinTypeService;
 using SPSS.Service.Services.CategoryService;
 using SPSS.Service.Services.CalendarService;
+using SPSS.Repository.Repositories;
+using SPSS.Service.Services;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -106,6 +108,11 @@ namespace SPSS
 
             //User
             services.AddScoped<IUserRepository, UserRepository>();
+
+            //Conversation
+            services.AddScoped<IConversationRepository, ConversationRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IChatService, ChatService>();
 
             return services;
         }
