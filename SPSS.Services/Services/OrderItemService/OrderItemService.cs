@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using SPSS.Entities;
 using SPSS.Repository.Entities;
 using SPSS.Repository.Repositories.OrderItemService;
 using SPSS.Repository.UnitOfWork;
+using SPSS.Service.Dto.Response;
 
 namespace SPSS.Services.Services.OrderItemService
 {
     public class OrderItemService : IOrderItemService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public OrderItemService(IUnitOfWork unitOfWork)
+        public OrderItemService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public Task RemoveOrderItemAsync(int orderItemId)
@@ -26,9 +30,9 @@ namespace SPSS.Services.Services.OrderItemService
             return _unitOfWork.OrderItems.GetOrderItemByIdAsync(orderItemId);
         }
 
-        public Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
+        public async Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
-            return _unitOfWork.OrderItems.GetOrderItemsByOrderIdAsync(orderId);
+            return await _unitOfWork.OrderItems.GetOrderItemsByOrderIdAsync(orderId);
         }
 
         public async Task<bool> CreateOrderItemsAsync(int orderId, IEnumerable<CartItem> cartItems)
@@ -40,6 +44,8 @@ namespace SPSS.Services.Services.OrderItemService
                 Quantity = ci.Quantity,
                 TotalPrice = ci.TotalPrice
             }).ToList();
+
+            var orderItemsResponse = _mapper.Map<IEnumerable<OrderItemResponse>>(orderItems);
 
             await _unitOfWork.OrderItems.AddOrderItemsAsync(orderItems);
             return true;
