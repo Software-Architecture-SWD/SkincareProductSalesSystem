@@ -24,14 +24,14 @@ namespace SPSS.Repository.Repositories.OrderItemService
             await _context.SaveChangesAsync();
         }
 
-        public Task RemoveOrderItemAsync(int orderItemId)
+        public async Task RemoveOrderItemAsync(int orderItemId)
         {
             var item = _context.OrderItems.FirstOrDefault(i => i.Id == orderItemId);
             if (item != null)
             {
                 _context.OrderItems.Remove(item);
             }
-            return Task.CompletedTask;
+            await _context.SaveChangesAsync();
         }
 
         public Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
