@@ -15,6 +15,7 @@ public class OrderRepository : IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.OrderItems)
+            .Include(o => o.AppUser)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
