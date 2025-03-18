@@ -11,8 +11,8 @@ namespace SPSS.Repository.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                CREATE OR ALTER TRIGGER [dbo].[trg_UpdateOrderTotals]
-                ON [dbo].[OrderItems]
+                CREATE OR ALTER TRIGGER trg_UpdateOrderTotals
+                ON OrderItems
                 AFTER INSERT, UPDATE, DELETE
                 AS
                 BEGIN
