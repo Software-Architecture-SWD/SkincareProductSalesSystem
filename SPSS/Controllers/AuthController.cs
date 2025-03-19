@@ -14,26 +14,34 @@ namespace SPSS.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserDto request)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest(new { Error = "Username and password cannot be empty." });
+            if (string.IsNullOrWhiteSpace(request.Username) ||
+                string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.FullName) ||
+                string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                return BadRequest(new { message = "All fields (Username, Password, Email, FullName, PhoneNumber) are required." });
+            }
 
             try
             {
                 var user = await authService.RegisterAsync(request);
                 if (user == null)
-                    return Conflict(new { Error = "Registration failed. User may already exist." });
+                    return Conflict(new { message = "Registration failed. User may already exist." });
 
                 return Ok(new
                 {
-                    UserId = user.Id,
-                    Username = user.UserName,
-                    EmailConfirmed = user.EmailConfirmed,
-                    Message = "Register Successfully!"
+                    user.Id,
+                    user.UserName,
+                    user.EmailConfirmed,
+                    user.FullName,
+                    user.PhoneNumber,
+                    message = "Register successfully!"
                 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
@@ -41,24 +49,19 @@ namespace SPSS.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
-                return BadRequest(new { Error = "Username and password cannot be empty." });
+                return BadRequest(new { message = "Username and password cannot be empty." });
 
             try
             {
                 var result = await authService.LoginAsync(request);
                 if (result == null)
-                    return Unauthorized(new { Error = "Invalid username or password." });
+                    return Unauthorized(new { message = "Invalid username or password." });
 
-                return Ok(new
-                {
-                    result.AccessToken,
-                    result.RefreshToken,
-                    EmailConfirmed = result.EmailConfirmed
-                });
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
@@ -72,7 +75,7 @@ namespace SPSS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "Google login failed.", details = ex.Message });
             }
         }
 
@@ -82,7 +85,7 @@ namespace SPSS.Controllers
             try
             {
                 if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
-                    return BadRequest("Invalid authorization header");
+                    return BadRequest(new { message = "Invalid authorization header." });
 
                 var token = authorizationHeader.Substring("Bearer ".Length).Trim();
                 var response = await authService.GoogleSetPasswordAsync(setPasswordDTO, token);
@@ -91,7 +94,7 @@ namespace SPSS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
@@ -101,16 +104,16 @@ namespace SPSS.Controllers
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username))
-                return Unauthorized(new { Error = "You need to be logged in to logout." });
+                return Unauthorized(new { message = "You need to be logged in to logout." });
 
             try
             {
                 var result = await authService.LogoutAsync(username);
-                return Ok(new { Message = result });
+                return Ok(new { message = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
@@ -122,21 +125,21 @@ namespace SPSS.Controllers
                 string.IsNullOrEmpty(request.NewPassword) ||
                 string.IsNullOrEmpty(request.ConfirmNewPassword))
             {
-                return BadRequest(new { Error = "All fields are required." });
+                return BadRequest(new { message = "All fields are required." });
             }
 
             try
             {
                 var username = User.FindFirst(ClaimTypes.Name)?.Value;
                 if (string.IsNullOrEmpty(username))
-                    return Unauthorized(new { Error = "User not found." });
+                    return Unauthorized(new { message = "User not found." });
 
                 var result = await authService.ChangePasswordAsync(username, request);
-                return Ok(new { Message = result });
+                return Ok(new { message = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
@@ -144,68 +147,48 @@ namespace SPSS.Controllers
         public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokenRequestDto request)
         {
             if (string.IsNullOrEmpty(request.UserId.ToString()) || string.IsNullOrEmpty(request.RefreshToken))
-                return BadRequest(new { Error = "UserId and RefreshToken cannot be empty." });
+                return BadRequest(new { message = "UserId and RefreshToken cannot be empty." });
 
             try
             {
                 var result = await authService.RefreshTokensAsync(request);
                 if (result == null)
-                    return Unauthorized(new { Error = "Invalid refresh token." });
+                    return Unauthorized(new { message = "Invalid refresh token." });
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
-        [HttpPut("roles/assign")]
-        public async Task<IActionResult> AssignRole([FromBody] SetRoleRequestDto request)
+        [HttpDelete("delete/{username}")]
+        public async Task<IActionResult> SoftDeleteAccount(string username)
         {
-            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Role))
-                return BadRequest(new { Error = "Username and role cannot be empty." });
-
             try
             {
-                var result = await authService.AssignRoleToUserAsync(request.Username, request.Role);
-                return Ok(new { Message = result });
+                var result = await authService.SoftDeleteAccountAsync(username);
+                return Ok(new { message = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return StatusCode(500, new { message = "Error while soft deleting account.", details = ex.Message });
             }
         }
 
-        [HttpPost("roles")]
-        public async Task<IActionResult> AddRole([FromBody] string roleName)
+        [HttpPut("restore/{username}")]
+        public async Task<IActionResult> RestoreAccount(string username)
         {
-            if (string.IsNullOrWhiteSpace(roleName))
-                return BadRequest(new { Error = "Role name cannot be empty." });
-
             try
             {
-                var result = await authService.AddRoleAsync(roleName);
-                return Ok(new { Message = result });
+                var result = await authService.RestoreAccountAsync(username);
+                return Ok(new { message = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+                return StatusCode(500, new { message = "Error while restoring account.", details = ex.Message });
             }
-        }
-
-        [Authorize]
-        [HttpGet("check-auth")]
-        public IActionResult AuthenticatedOnlyEndpoint()
-        {
-            return Ok(new { Message = "You are authenticated!" });
-        }
-
-        [Authorize(Roles = "Admin")]
-        [HttpGet("check-admin")]
-        public IActionResult AdminOnlyEndpoint()
-        {
-            return Ok(new { Message = "You are an admin!" });
         }
 
         [HttpPost("password/forgot")]

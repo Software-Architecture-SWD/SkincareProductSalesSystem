@@ -29,7 +29,9 @@ namespace SPSS.Service.Services.AuthService
             {
                 UserName = request.Username,
                 Email = request.Email,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                FullName = request.FullName,
+                PhoneNumber = request.PhoneNumber
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -150,6 +152,33 @@ namespace SPSS.Service.Services.AuthService
             }
 
             return "Password has been reset successfully.";
+        }
+
+        public async Task<string> SoftDeleteAccountAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            user.isDelete = true;
+            await _userManager.UpdateAsync(user);
+
+            return "User account has been soft deleted.";
+        }
+
+        public async Task<string> RestoreAccountAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                throw new Exception("User not found.");
+
+            if (!user.isDelete)
+                throw new Exception("User account is already active.");
+
+            user.isDelete = false;
+            await _userManager.UpdateAsync(user);
+
+            return "User account has been restored.";
         }
 
 
