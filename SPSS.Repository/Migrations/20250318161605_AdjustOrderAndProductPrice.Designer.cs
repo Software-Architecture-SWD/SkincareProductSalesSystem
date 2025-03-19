@@ -12,8 +12,8 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250318011840_addTrigger2")]
-    partial class addTrigger2
+    [Migration("20250318161605_AdjustOrderAndProductPrice")]
+    partial class AdjustOrderAndProductPrice
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -697,6 +697,9 @@ namespace SPSS.Repository.Migrations
                     b.Property<int>("ItemsCount")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("OriginalTotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -755,7 +758,7 @@ namespace SPSS.Repository.Migrations
 
                     b.ToTable("OrderItems", null, t =>
                         {
-                            t.HasTrigger("trg_UpdateOrderTotalPrice");
+                            t.HasTrigger("trg_UpdateOrderTotals");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -814,6 +817,9 @@ namespace SPSS.Repository.Migrations
 
                     b.Property<string>("Ingredients")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)

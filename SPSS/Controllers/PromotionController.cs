@@ -152,7 +152,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while restoring the promotion.", error = ex.Message });
             }
         }
-        [HttpPost("apply-promotion")]
+        [HttpPost("apply-promotion-category")]
         public async Task<IActionResult> ApplyPromotionToCategory([FromQuery] string categoryName, [FromQuery] string promotionCode)
         {
             try
@@ -161,6 +161,25 @@ namespace SPSS.API.Controllers
 
                 // Gọi service để áp dụng khuyến mãi
                 await _promotionService.ApplyPromotionAsync(categoryName, promotionCode);
+
+                return Ok(new { message = "Promotion applied successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error applying promotion to category.");
+                return StatusCode(500, new { message = "An error occurred while applying the promotion.", error = ex.Message });
+            }
+        }
+
+        [HttpPost("apply-promotion-order")]
+        public async Task<IActionResult> ApplyPromotionToOrder([FromQuery] int orderId, [FromQuery] string promotionCode)
+        {
+            try
+            {
+                _logger.LogInformation("Applying promotion to category with name {OrderId} and promotion code {PromotionCode}.", orderId, promotionCode);
+
+                // Gọi service để áp dụng khuyến mãi
+                await _promotionService.ApplyPromotionOrderAsync(orderId, promotionCode);
 
                 return Ok(new { message = "Promotion applied successfully." });
             }
