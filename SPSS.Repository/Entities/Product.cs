@@ -27,6 +27,9 @@ namespace SPSS.Entities
         public decimal Price { get; set; }
 
         [Required]
+        public decimal OriginalPrice { get; set; }
+
+        [Required]
         public int StockQuantity { get; set; }
         public string? ImageUrl { get; set; }
         public string? Ingredients { get; set; }

@@ -166,16 +166,19 @@ public class PromotionService(IUnitOfWork _unitOfWork, ILogger<PromotionService>
                 throw new KeyNotFoundException($"Promotion with code {promotionCode} not found.");
             }
 
+            if (promotion.EndDate < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Promotion with code {PromotionCode} has expired.", promotionCode);
+                throw new InvalidOperationException($"Promotion with code {promotionCode} has expired.");
+            }
+
             var productsInCategory = await _unitOfWork.Products.Query()
                 .Where(p => p.CategoryId == category.Id)
                 .ToListAsync();
 
             foreach (var product in productsInCategory)
             {
-                product.PromotionId = promotion.Id;  
-
-                decimal discountAmount = product.Price * (promotion.DiscountValue / 100);
-                product.Price = product.Price - discountAmount; 
+                product.PromotionId = promotion.Id;
 
                 await _unitOfWork.Products.UpdateAsync(product); 
             }
@@ -190,6 +193,49 @@ public class PromotionService(IUnitOfWork _unitOfWork, ILogger<PromotionService>
             throw;
         }
     }
+
+    public async Task ApplyPromotionOrderAsync(int orderId, string promotionCode)
+    {
+        try
+        {
+
+            var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
+
+            if (order == null)
+            {
+                _logger.LogWarning("Order with ID {OrderId} not found.", orderId);
+                throw new KeyNotFoundException($"Order with ID {orderId} not found.");
+            }
+
+            var promotion = await _unitOfWork.Promotions.Query()
+                .Where(p => p.Code.ToLower() == promotionCode.ToLower() && !p.isDelete)
+                .FirstOrDefaultAsync();
+
+            if (promotion == null)
+            {
+                _logger.LogWarning("Promotion with code {PromotionCode} not found.", promotionCode);
+                throw new KeyNotFoundException($"Promotion with code {promotionCode} not found.");
+            }
+
+            if (promotion.EndDate < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Promotion with code {PromotionCode} has expired.", promotionCode);
+                throw new InvalidOperationException($"Promotion with code {promotionCode} has expired.");
+            }
+
+            order.PromotionId = promotion.Id;
+            await _unitOfWork.Orders.UpdateOrderAsync(order);
+            await _unitOfWork.CompleteAsync();
+
+            _logger.LogInformation("Promotion with code {PromotionCode} applied to order {OrderId}.", promotionCode, orderId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error applying promotion to category.");
+            throw;
+        }
+    }
+
     public async Task RemovePromotionAsync(string categoryName)
     {
         try

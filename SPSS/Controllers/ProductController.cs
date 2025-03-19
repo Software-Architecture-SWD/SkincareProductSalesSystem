@@ -28,6 +28,7 @@ namespace SPSS.Controllers
                 var product = _mapper.Map<Product>(productRequest);
                 product.BrandId = brand.Id;
                 product.CategoryId = category.Id;
+                product.OriginalPrice = product.Price;
 
                 if (productRequest.ImageFile != null)
                 {

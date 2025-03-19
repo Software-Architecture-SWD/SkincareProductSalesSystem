@@ -15,6 +15,7 @@ namespace SPSS.Service.Services.PromotionService
         Task RestoreAsync(int id); 
         Task<(IEnumerable<Promotion> Promotions, int TotalCount)> GetPagedPromotionsAsync(int page, int pageSize);
         Task ApplyPromotionAsync(string categoryName, string promotionCode);
+        Task ApplyPromotionOrderAsync(int orderId, string promotionCode);
         Task RemovePromotionAsync(string categoryName);
     }
 }
