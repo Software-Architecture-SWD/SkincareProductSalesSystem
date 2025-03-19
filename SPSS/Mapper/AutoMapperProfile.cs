@@ -46,6 +46,8 @@ namespace SPSS.Mapper
             CreateMap<Order, OrderResponse>()
                 .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.UserName));
             CreateMap<BookingInfoRequest, BookingInfo>();
+            CreateMap<OrderItem, OrderItemResponse>();
+
         }
     }
 }

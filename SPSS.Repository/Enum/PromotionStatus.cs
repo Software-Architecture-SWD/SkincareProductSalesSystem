@@ -1,4 +1,4 @@
-﻿namespace SPSS.Entities
+﻿namespace SPSS.Repository.Enum
 {
     public enum PromotionStatus
     {

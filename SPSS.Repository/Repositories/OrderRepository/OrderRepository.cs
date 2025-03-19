@@ -15,6 +15,7 @@ public class OrderRepository : IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.OrderItems)
+            .Include(o => o.AppUser)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
@@ -46,5 +47,10 @@ public class OrderRepository : IOrderRepository
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
         }
+    }
+
+    public IQueryable<Category> Query()
+    {
+        return _context.Categories.AsQueryable();
     }
 }

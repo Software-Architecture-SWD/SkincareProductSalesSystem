@@ -124,6 +124,10 @@ namespace SPSS.Data
                      .OnDelete(DeleteBehavior.Restrict);
             });
 
+            builder.Entity<OrderItem>().ToTable("OrderItems", tb => tb.HasTrigger("trg_UpdateOrderTotals"));
+            builder.Entity<Product>().ToTable("Products", tb => tb.HasTrigger("trg_UpdateProductPromotion"));
+            builder.Entity<Order>().ToTable("Orders", tb => tb.HasTrigger("trg_UpdateOrderPromotion"));
+
             builder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
                 .WithMany(c => c.CartItems)

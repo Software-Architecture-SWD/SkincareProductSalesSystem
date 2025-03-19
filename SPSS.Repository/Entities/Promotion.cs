@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SPSS.Repository.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace SPSS.Entities
 {

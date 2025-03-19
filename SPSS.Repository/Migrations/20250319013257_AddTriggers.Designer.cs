@@ -12,8 +12,8 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250317143244_addTrigger")]
-    partial class addTrigger
+    [Migration("20250319013257_AddTriggers")]
+    partial class AddTriggers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -697,6 +697,9 @@ namespace SPSS.Repository.Migrations
                     b.Property<int>("ItemsCount")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("OriginalTotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -723,7 +726,12 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", null, t =>
+                        {
+                            t.HasTrigger("trg_UpdateOrderPromotion");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("SPSS.Entities.OrderItem", b =>
@@ -753,7 +761,12 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", null, t =>
+                        {
+                            t.HasTrigger("trg_UpdateOrderTotals");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("SPSS.Entities.Payment", b =>
@@ -810,6 +823,9 @@ namespace SPSS.Repository.Migrations
                     b.Property<string>("Ingredients")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -838,7 +854,12 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("PromotionId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", null, t =>
+                        {
+                            t.HasTrigger("trg_UpdateProductPromotion");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("SPSS.Entities.ProductCapicity", b =>
