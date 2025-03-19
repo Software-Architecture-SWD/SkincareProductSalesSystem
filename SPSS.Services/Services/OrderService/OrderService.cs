@@ -64,6 +64,8 @@ public class OrderService : IOrderService
         // Call OrderItemService to create OrderItems separately
         var orderItems = await _orderItemService.CreateOrderItemsAsync(createdOrder.Id, selectedCartItems);
 
+        createdOrder.OriginalTotalAmount = createdOrder.TotalAmount;
+
         // Delete only selected cart items after order is successfully created
         var cartItemCheck = await _cartItemService.RemoveCartItemsAsync(cartItemIds);
 
