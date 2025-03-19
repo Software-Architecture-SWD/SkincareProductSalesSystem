@@ -45,6 +45,42 @@ namespace SPSS.Controllers
             }
         }
 
+        [HttpPost("register-customer")]
+        public async Task<IActionResult> RegisterWithRole([FromBody] UserDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username) ||
+                string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.FullName) ||
+                string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                return BadRequest(new { message = "All fields (Username, Password, Email, FullName, PhoneNumber) are required." });
+            }
+
+            try
+            {
+                var user = await authService.RegisterWithRoleAsync(request);
+                if (user == null)
+                    return Conflict(new { message = "Registration failed. User may already exist." });
+
+                return Ok(new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.EmailConfirmed,
+                    user.FullName,
+                    user.PhoneNumber,
+                    Role = "Customer",
+                    message = "User registered successfully with role 'Customer'."
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {

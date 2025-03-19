@@ -40,6 +40,40 @@ namespace SPSS.Service.Services.AuthService
 
             return user;
         }
+        public async Task<AppUser?> RegisterWithRoleAsync(UserDto request)
+        {
+            if (await _userManager.FindByNameAsync(request.Username) != null)
+                throw new Exception("Username already exists.");
+
+            if (await _userManager.FindByEmailAsync(request.Email) != null)
+                throw new Exception("Email already exists.");
+
+            var user = new AppUser
+            {
+                UserName = request.Username,
+                Email = request.Email,
+                EmailConfirmed = false,
+                FullName = request.FullName,
+                PhoneNumber = request.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+                throw new Exception($"Registration failed: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+
+            var roleExists = await _roleManager.RoleExistsAsync("Customer");
+            if (!roleExists)
+            {
+                var roleResult = await _roleManager.CreateAsync(new IdentityRole("Customer"));
+                if (!roleResult.Succeeded)
+                    throw new Exception("Failed to create Customer role.");
+            }
+
+            await _userManager.AddToRoleAsync(user, "Customer");
+
+            return user;
+        }
+
 
         public async Task<string> AddRoleAsync(string roleName)
         {

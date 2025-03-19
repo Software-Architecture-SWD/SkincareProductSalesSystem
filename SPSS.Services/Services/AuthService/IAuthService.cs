@@ -31,5 +31,6 @@ namespace SPSS.Service.Services.AuthService
 
         Task<string> SoftDeleteAccountAsync(string username);
         Task<string> RestoreAccountAsync(string username);
+        Task<AppUser?> RegisterWithRoleAsync(UserDto request);
     }
 }
