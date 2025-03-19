@@ -13,6 +13,7 @@ namespace SPSS.Repository.Repositories.PaymentRepository
         Task AddPaymentAsync(Payment payment);
         Task UpdatePaymentAsync(Payment payment);
         Task<Payment> GetPaymentByIdAsync(int id);
+        Task<Payment?> GetPaymentByOrderIdAsync(int orderId);
 
     }
 }
