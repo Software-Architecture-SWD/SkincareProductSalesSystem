@@ -18,6 +18,7 @@ namespace SPSS.Service.Dto.Response
         public OrderStatus Status { get; set; }
         public bool isDelete { get; set; } = false;
         public decimal TotalAmount { get; set; }
+        public decimal OriginalTotalAmount { get; set; }
         public int ItemsCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? PaymentDate { get; set; }

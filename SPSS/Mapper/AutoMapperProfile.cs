@@ -70,8 +70,6 @@ namespace SPSS.Mapper
             // ✅ Order
             CreateMap<Order, OrderResponse>()
                 .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.UserName));
-            CreateMap<OrderItem, OrderItemResponse>();
-
             // 🔥 ✅ **Chat (Conversation & Message)**
             CreateMap<Conversation, ConversationResponse>()
                 .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.UserId1))
@@ -93,6 +91,9 @@ namespace SPSS.Mapper
                 .ForMember(dest => dest.ConversationId, opt => opt.MapFrom(src => src.ConversationId))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Message))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<BookingInfoRequest, BookingInfo>();
+            CreateMap<OrderItem, OrderItemResponse>()
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
         }
     }
 }

@@ -26,6 +26,9 @@ namespace SPSS.Entities
         public decimal TotalAmount { get; set; } = 0;
 
         [Required]
+        public decimal OriginalTotalAmount { get; set; } = 0;
+
+        [Required]
         public int ItemsCount { get; set; } = 0;
 
         [Required]

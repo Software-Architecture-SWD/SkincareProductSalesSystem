@@ -7,5 +7,6 @@ public interface IOrderRepository
     Task<Order> CreateOrderAsync(Order order);
     Task UpdateOrderAsync(Order order);
     Task DeleteOrderAsync(int orderId);
+    IQueryable<Category> Query();
 }
     

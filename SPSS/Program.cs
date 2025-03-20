@@ -78,6 +78,7 @@ namespace SPSS
             {
                 options.ClientId = builder.Configuration["Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+                options.Scope.Add("https://www.googleapis.com/auth/calendar.events");
             });
 
             builder.Services.AddSwaggerGen(option =>

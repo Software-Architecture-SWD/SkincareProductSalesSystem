@@ -48,4 +48,9 @@ public class OrderRepository : IOrderRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public IQueryable<Category> Query()
+    {
+        return _context.Categories.AsQueryable();
+    }
 }
