@@ -42,6 +42,7 @@ namespace SPSS.Data
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<BookingInfo> BookingInfos { get; set; }
         public DbSet<Result> Results { get; set; }
+        public DbSet<BlogContent> BlogContents { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -56,6 +57,12 @@ namespace SPSS.Data
                 .HasOne(b => b.BlogCategory)
                 .WithMany()
                 .HasForeignKey(b => b.BlogCategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Blog>()
+                .HasMany(b => b.Contents)
+                .WithOne(bc => bc.Blog)
+                .HasForeignKey(bc => bc.BlogId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Address>()
