@@ -9,6 +9,6 @@ namespace SPSS.Service.Services.CalendarService
 {
     public interface ICalendarService
     {
-        Task CreateEventAsync(BookingInfo b);
+        Task<string> CreateEventAsync(BookingInfo booking, string accessToken);
     }
 }

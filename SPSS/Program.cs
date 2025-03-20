@@ -21,6 +21,8 @@ using VNPAY.NET;
 using SPSS.Repository.Repositories.ProductRepository;
 using SPSS.Repository.Repositories.QuestionRepository;
 using SPSS.Service.Services.QuestionService;
+using Microsoft.AspNetCore.SignalR;
+using SPSS.API.Hubs; // ✅ Import Hub
 
 namespace SPSS
 {
@@ -32,10 +34,11 @@ namespace SPSS
 
             builder.Services.AddControllers();
 
-            builder.Services.AddEndpointsApiExplorer(); //swagger
+            builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SPSSDatabase")));
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
+                builder.Configuration.GetConnectionString("SPSSDatabase")));
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -45,8 +48,8 @@ namespace SPSS
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
             })
-             .AddEntityFrameworkStores<AppDbContext>()
-             .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
             var secretKey = builder.Configuration["AppSettings:Token"];
             if (string.IsNullOrEmpty(secretKey))
@@ -75,6 +78,7 @@ namespace SPSS
             {
                 options.ClientId = builder.Configuration["Google:ClientId"];
                 options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+                options.Scope.Add("https://www.googleapis.com/auth/calendar.events");
             });
 
             builder.Services.AddSwaggerGen(option =>
@@ -106,10 +110,10 @@ namespace SPSS
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-            builder.Services.AddDistributedMemoryCache(); // Cần thiết cho session
+            builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian timeout của session
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
@@ -123,18 +127,19 @@ namespace SPSS
                           .AllowAnyMethod();
                 });
             });
+
+            // ✅ Thêm SignalR vào dịch vụ
+            builder.Services.AddSignalR();
+
             // Cấu hình Email Service
             var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>()
-                  ?? throw new InvalidOperationException("Missing Email Configuration in appsettings.json.");
+                ?? throw new InvalidOperationException("Missing Email Configuration in appsettings.json.");
 
             builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailConfiguration"));
             builder.Services.AddSingleton(emailConfig);
             builder.Services.AddSingleton(new ConcurrentDictionary<string, OtpEntry>());
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddApplicationServices();
-            //builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
-
 
             var app = builder.Build();
 
@@ -142,12 +147,6 @@ namespace SPSS
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                //app.UseSwaggerUI(c =>
-                //{
-                //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                //    c.RoutePrefix = string.Empty; // Định tuyến trang Swagger
-                //}); ;
-
             }
 
             app.UseSession();
@@ -157,6 +156,10 @@ namespace SPSS
             app.UseAuthorization();
 
             app.MapControllers();
+
+            // ✅ Đăng ký Hub cho SignalR
+            app.MapHub<ChatHub>("/chatHub");
+
             app.Run();
         }
     }
