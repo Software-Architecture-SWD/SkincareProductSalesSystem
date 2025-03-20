@@ -21,6 +21,9 @@ using SPSS.Repository.Repositories.PaymentRepository;
 using SPSS.Repository.Repositories.ResultRepository;
 using SPSS.Repository.Repositories.SkinTypeRepository;
 using SPSS.Repository.Repositories;
+using SPSS.Repository.Repositories.BlogCategoryReposiotry;
+using SPSS.Repository.Repositories.BlogRepository;
+using SPSS.Repository.Repositories.BlogContentRepository;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -45,6 +48,9 @@ namespace SPSS.Repository.UnitOfWork
         ISkinTypeRepository SkinTypes { get; }
         IConversationRepository Conversations { get; }
         IMessageRepository Messages { get; }
+        IBlogCategoryReposiotry BlogCategories { get; }
+        IBlogRepository Blogs { get; }
+        IBlogContentRepository BlogContents { get; }
         Task<int> CompleteAsync();
     }
 }   

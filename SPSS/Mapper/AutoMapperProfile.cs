@@ -94,6 +94,21 @@ namespace SPSS.Mapper
             CreateMap<BookingInfoRequest, BookingInfo>();
             CreateMap<OrderItem, OrderItemResponse>()
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
+
+            // ✅ BlogCategory
+            CreateMap<BlogCategory, BlogCategoryResponse>();
+            CreateMap<BlogCategoryRequest, BlogCategory>()
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false))
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            // ✅ Blog
+            CreateMap<Blog, BlogResponse>();
+            CreateMap<BlogRequest, Blog>()
+                .ForMember(dest => dest.isDelete, opt => opt.MapFrom(src => false))
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            // ✅ BlogContent
+            CreateMap<BlogContent, BlogContentResponse>();
+            CreateMap<BlogContentRequest, BlogContent>()
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

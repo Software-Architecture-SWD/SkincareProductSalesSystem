@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SPSS.Repository.Entities;
 
 namespace SPSS.Entities
 {
@@ -19,17 +20,13 @@ namespace SPSS.Entities
         public string Title { get; set; } = string.Empty;
 
         [Required]
-        public string Content { get; set; } = string.Empty;
-
-        [Required]
         public int Status { get; set; }
-
-        public string? Image { get; set; }
 
         public bool isDelete { get; set; } = false;
 
         // Navigation properties
         public virtual AppUser? AppUser { get; set; }
         public virtual BlogCategory? BlogCategory { get; set; }
+        public virtual ICollection<BlogContent> Contents { get; set; } = new List<BlogContent>();
     }
 }

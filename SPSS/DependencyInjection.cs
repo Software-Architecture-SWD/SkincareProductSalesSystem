@@ -44,6 +44,12 @@ using SPSS.Service.Services.CategoryService;
 using SPSS.Service.Services.CalendarService;
 using SPSS.Repository.Repositories;
 using SPSS.Service.Services;
+using SPSS.Repository.Repositories.BlogCategoryReposiotry;
+using SPSS.Service.Services.BlogCategoryService;
+using SPSS.Repository.Repositories.BlogRepository;
+using SPSS.Service.Services.BlogService;
+using SPSS.Repository.Repositories.BlogContentRepository;
+using SPSS.Service.Services.BlogContentService;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -76,6 +82,9 @@ namespace SPSS
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IResultRepository, ResultRepository>();
             services.AddScoped<ISkinTypeRepository, SkinTypeRepository>();
+            services.AddScoped<IBlogCategoryReposiotry, BlogCategoryReposiotry>();
+            services.AddScoped<IBlogRepository, BlogRepository>();
+            services.AddScoped<IBlogContentRepository, BlogContentRepository>();
 
             // Đăng ký các Services
             services.AddScoped<IProductService, ProductService>();
@@ -90,6 +99,9 @@ namespace SPSS
             services.AddScoped<ISkinTypeService, SkinTypeService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICalendarService, CalendarService>();
+            services.AddScoped<IBlogCategoryService, BlogCategoryService>();
+            services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IBlogContentService, BlogContentService>();
             //Cart
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartService, CartService>();
