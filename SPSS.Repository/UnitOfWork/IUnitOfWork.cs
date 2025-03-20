@@ -20,6 +20,7 @@ using SPSS.Repository.Repositories.AnswerDetailRepository;
 using SPSS.Repository.Repositories.PaymentRepository;
 using SPSS.Repository.Repositories.ResultRepository;
 using SPSS.Repository.Repositories.SkinTypeRepository;
+using SPSS.Repository.Repositories;
 
 namespace SPSS.Repository.UnitOfWork
 {
@@ -42,6 +43,8 @@ namespace SPSS.Repository.UnitOfWork
         IPaymentRepository Payments { get; }
         IResultRepository Results { get; }
         ISkinTypeRepository SkinTypes { get; }
+        IConversationRepository Conversations { get; }
+        IMessageRepository Messages { get; }
         Task<int> CompleteAsync();
     }
 }   

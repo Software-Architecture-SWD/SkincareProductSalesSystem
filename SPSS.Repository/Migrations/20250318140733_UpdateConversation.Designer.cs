@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SPSS.Data;
 
@@ -11,9 +12,11 @@ using SPSS.Data;
 namespace SPSS.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250318140733_UpdateConversation")]
+    partial class UpdateConversation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,10 +312,6 @@ namespace SPSS.Repository.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -697,9 +696,6 @@ namespace SPSS.Repository.Migrations
                     b.Property<int>("ItemsCount")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("OriginalTotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -726,12 +722,7 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", null, t =>
-                        {
-                            t.HasTrigger("trg_UpdateOrderPromotion");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("SPSS.Entities.OrderItem", b =>
@@ -823,9 +814,6 @@ namespace SPSS.Repository.Migrations
                     b.Property<string>("Ingredients")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -854,12 +842,7 @@ namespace SPSS.Repository.Migrations
 
                     b.HasIndex("PromotionId");
 
-                    b.ToTable("Products", null, t =>
-                        {
-                            t.HasTrigger("trg_UpdateProductPromotion");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("SPSS.Entities.ProductCapicity", b =>
