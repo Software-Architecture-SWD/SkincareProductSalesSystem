@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SPSS.Entities;
+using SPSS.Repository.Enum;
 using SPSS.Repository.UnitOfWork;
 using System;
 using System.Collections.Generic;
@@ -33,11 +35,11 @@ namespace SPSS.Service.Services.VNPayService
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
         }
 
-        public async Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress, int paymentId)
+        public async Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress, int orderId)
         {
             try
             {
-                _httpContextAccessor.HttpContext?.Session.SetInt32("PaymentId", paymentId);
+                _httpContextAccessor.HttpContext?.Session.SetInt32("OrderId", orderId);
 
                 var request = new PaymentRequest
                 {
@@ -78,18 +80,20 @@ namespace SPSS.Service.Services.VNPayService
             try
             {
                 var paymentResult =  _vnpay.GetPaymentResult(query);
-                var paymentId = _httpContextAccessor.HttpContext?.Session.GetInt32("PaymentId")??0;
-                var payment = await _unitOfWork.Payments.GetPaymentByIdAsync(paymentId);
+                var orderId = _httpContextAccessor.HttpContext?.Session.GetInt32("OrderId")??0;
+                var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
+                var payment = await _unitOfWork.Payments.GetPaymentByOrderIdAsync(orderId);
 
                 if (paymentResult.IsSuccess)
                 {
                     _logger.LogInformation("Thanh toán thành công - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Cập nhật trạng thái đơn hàng vào DB
-                   
+                    order.Status = OrderStatus.Completed;
                     payment.PaymentStatus = PaymentStatus.Success;
                     payment.TransactionId = paymentResult.VnpayTransactionId.ToString();
                     payment.PaymentDate = paymentResult.Timestamp;
                     payment.CreatedAt = DateTime.UtcNow;
+
 
 
                 }
@@ -97,9 +101,9 @@ namespace SPSS.Service.Services.VNPayService
                 {
                     _logger.LogWarning("Thanh toán thất bại - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Xử lý khi thanh toán thất bại (ví dụ: hủy đơn hàng)
+                    order.Status = OrderStatus.Canceled;
                     payment.PaymentStatus = PaymentStatus.Failed;
                     payment.CreatedAt = DateTime.UtcNow;
-
 
                 }
 

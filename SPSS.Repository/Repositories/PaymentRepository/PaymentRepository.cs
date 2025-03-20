@@ -32,5 +32,11 @@ namespace SPSS.Repository.Repositories.PaymentRepository
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Payment?> GetPaymentByOrderIdAsync(int orderId)
+        {
+            return await _context.Payments
+                .FirstOrDefaultAsync(p => p.OrderId == orderId);
+        }
     }
 }
