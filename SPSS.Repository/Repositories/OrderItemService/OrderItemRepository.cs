@@ -34,16 +34,19 @@ namespace SPSS.Repository.Repositories.OrderItemService
             await _context.SaveChangesAsync();
         }
 
-        public Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
+        public async Task<OrderItem> GetOrderItemByIdAsync(int orderItemId)
         {
-            var item = _context.OrderItems.FirstOrDefault(i => i.Id == orderItemId);
-            return Task.FromResult(item);
+            return await _context.OrderItems
+                .Include(i => i.Product)
+                .FirstOrDefaultAsync(i => i.Id == orderItemId);
         }
 
-        public Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
+        public async Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId)
         {
-            var items = _context.OrderItems.Where(i => i.OrderId == orderId).ToList();
-            return Task.FromResult(items);
+            return await _context.OrderItems
+                .Where(i => i.OrderId == orderId)
+                .Include(i => i.Product)
+                .ToListAsync();
         }
     }
 }
