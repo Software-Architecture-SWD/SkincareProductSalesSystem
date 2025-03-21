@@ -62,5 +62,11 @@ namespace SPSS.Repository.Repositories.ProductRepository
                                  .Where(p => p.CategoryId == categoryId && !p.isDelete)
                                  .ToListAsync();
         }
+
+
+        public async Task <int> GetTotalProducts()
+        {
+            return await _context.Products.CountAsync(p => !p.isDelete);
+        }
     }
 }

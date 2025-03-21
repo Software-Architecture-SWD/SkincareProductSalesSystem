@@ -45,4 +45,19 @@ public class OrderController : ControllerBase
         var orderResponse = _mapper.Map<OrderResponse>(order);
         return Ok(orderResponse);
     }
+
+
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotalOrdersByDay([FromQuery] DateTime date)
+    {
+        try
+        {
+            var result = await _orderService.GetTotalOrdersByDayAsync(date);
+            return Ok(new { Date = date, TotalOrders = result });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
+        }
+    }
 }

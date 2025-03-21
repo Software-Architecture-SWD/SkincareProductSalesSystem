@@ -8,5 +8,6 @@ public interface IOrderRepository
     Task UpdateOrderAsync(Order order);
     Task DeleteOrderAsync(int orderId);
     IQueryable<Category> Query();
+    Task<int> GetTotalOrderByDayAsync(DateTime date);
 }
     
