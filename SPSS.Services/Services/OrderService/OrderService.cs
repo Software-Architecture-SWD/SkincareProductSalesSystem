@@ -83,4 +83,20 @@ public class OrderService : IOrderService
     {
         return await _unitOfWork.Orders.GetOrdersByUserIdAsync(userId);
     }
+
+    public async Task<int> GetTotalOrdersByDayAsync(DateTime date)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching total orders for date: {Date}", date);
+            var count = await _unitOfWork.Orders.GetTotalOrderByDayAsync(date);
+            _logger.LogInformation("Total orders for {Date}: {Count}", date, count);
+            return count;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving order count for date: {Date}", date);
+            throw new Exception("Error retrieving order count", ex);
+        }
+    }
 }

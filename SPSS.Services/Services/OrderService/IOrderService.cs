@@ -7,4 +7,6 @@ public interface IOrderService
     Task<OrderResponse> CreateOrderAsync(string userId, IEnumerable<int> cartItemIds);
     Task<Order> GetOrderByIdAsync(int orderId);
     Task<IEnumerable<Order>> GetUserOrdersAsync(string userId);
+
+    Task<int> GetTotalOrdersByDayAsync(DateTime date);
 }

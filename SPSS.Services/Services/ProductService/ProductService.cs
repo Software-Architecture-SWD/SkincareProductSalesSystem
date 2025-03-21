@@ -206,4 +206,18 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
             throw;
         }
     }
+
+    public async Task<int> GetTotalProducts()
+    {
+        try
+        {
+            return await _unitOfWork.Products.GetTotalProducts();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching total products");
+            return 0;
+        }
+    }
+
 }
