@@ -177,5 +177,19 @@ namespace SPSS.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving filtered products.", error = ex.Message });
             }
         }
+
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalProducts()
+        {
+            try
+            {
+                var result = await _productService.GetTotalProducts();
+                return Ok(new { TotalProducts = result });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

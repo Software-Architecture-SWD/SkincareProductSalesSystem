@@ -53,4 +53,11 @@ public class OrderRepository : IOrderRepository
     {
         return _context.Categories.AsQueryable();
     }
+
+    public async Task<int> GetTotalOrderByDayAsync(DateTime date)
+    {
+        return await _context.Orders
+            .Where(o => o.CompletedDate == date.Date && !o.isDelete)
+            .CountAsync();
+    }
 }

@@ -19,5 +19,7 @@ namespace SPSS.Repository.Repositories.ProductRepository
         Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId);
         IQueryable<Product> Query();
 
+        Task<int> GetTotalProducts();
+
     }
 }

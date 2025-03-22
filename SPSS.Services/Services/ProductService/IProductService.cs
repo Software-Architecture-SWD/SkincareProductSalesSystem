@@ -14,5 +14,7 @@ namespace SPSS.Service.Services.ProductService
         Task<Category> GetCategoryByNameAsync(string categoryName);
         Task<Brand> GetBrandByNameAsync(string brandName);
 
+        Task<int> GetTotalProducts();
+
     }
 }
