@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SPSS.API.Controllers
 {
     [ApiController]
-    [Route("api/chat")]
+    [Route("chats")]
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
@@ -30,7 +30,7 @@ namespace SPSS.API.Controllers
         }
 
         // ✅ 1. API Customer starts a conversation
-        [HttpPost("start")]
+        [HttpPost]
         public async Task<IActionResult> StartConversation([FromBody] StartChatRequest request)
         {
             try
@@ -50,7 +50,7 @@ namespace SPSS.API.Controllers
         }
 
         // ✅ 2. API Expert accepts a conversation
-        [HttpPost("accept/{conversationId}")]
+        [HttpPost("{conversationId}/accept")]
         public async Task<IActionResult> AcceptConversation(int conversationId, [FromBody] AcceptChatRequest request)
         {
             try
@@ -70,7 +70,7 @@ namespace SPSS.API.Controllers
         }
 
         // ✅ 3. API Send message
-        [HttpPost("send")]
+        [HttpPost("{conversationId}/messages")]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
         {
             try
@@ -94,7 +94,7 @@ namespace SPSS.API.Controllers
         }
 
         // ✅ 4. API Get chat history
-        [HttpGet("history/{conversationId}")]
+        [HttpGet("{conversationId}/messages")]
         public async Task<IActionResult> GetChatHistory(int conversationId)
         {
             try
@@ -129,7 +129,7 @@ namespace SPSS.API.Controllers
         }
 
         // ✅ 6. API Mark message as read
-        [HttpPost("read/{messageId}")]
+        [HttpPost("messages/{messageId}/read")]
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
         {
             try

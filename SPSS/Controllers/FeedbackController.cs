@@ -17,7 +17,7 @@ namespace SPSS.API.Controllers
     [ApiController]
     public class FeedbackController(IFeedbackService _feedbackService, ILogger<FeedbackController> _logger) : ControllerBase
     {
-        [HttpGet("product/{productId}")]
+        [HttpGet("product/{productId}/feedbacks")]
         public async Task<ActionResult<IEnumerable<FeedbackResponse>>> GetFeedbacksForProduct(int productId)
         {
             try
@@ -152,7 +152,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
             }
         }
-        [HttpPut("restore/{id}")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreFeedback(int id)
         {
             try

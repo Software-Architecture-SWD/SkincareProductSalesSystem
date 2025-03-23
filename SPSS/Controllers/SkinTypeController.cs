@@ -7,7 +7,7 @@ using SPSS.Service.Services.SkinTypeService;
 
 namespace SPSS.API.Controllers
 {
-    [Route("api/skintypes")]
+    [Route("skintypes")]
     [ApiController]
     public class SkinTypeController(IMapper _mapper, ISkinTypeService _skinTypeService) : ControllerBase
     {
@@ -58,7 +58,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while soft-deleting the skin type.", error = ex.Message });
             }
         }
-        [HttpPut("{id}/restoration")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreSkinType(int id)
         {
             try
@@ -71,7 +71,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while restoring the skin type.", error = ex.Message });
             }
         }
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetSkinTypeById(int id)
         {
             try
@@ -90,7 +90,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving skin type.", error = ex.Message });
             }
         }
-        [HttpGet("{name}")]
+        [HttpGet("search")]
         public async Task<IActionResult> GetSkinTypeByName( string name)
         {
             try

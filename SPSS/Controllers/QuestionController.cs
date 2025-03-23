@@ -45,7 +45,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving questions.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}/removal")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteQuestion(int id)
         {
             try
@@ -59,7 +59,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpPut("{id}/restoration")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreQuestion(int id)
         {
             try

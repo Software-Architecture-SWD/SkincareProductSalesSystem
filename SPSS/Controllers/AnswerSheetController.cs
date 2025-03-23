@@ -7,12 +7,12 @@ using SPSS.Service.Services.AnswerSheetService;
 
 namespace SPSS.API.Controllers
 {
-    [Route("answersheet")]
+    [Route("answer-sheets")]
     [ApiController]
     public class AnswerSheetController(IMapper _mapper, IAnswerSheetService _answerSheetService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> CreateAnswerSheet([FromForm] AnswerSheetRequest answerSheetRequest)
+        public async Task<IActionResult> Create([FromForm] AnswerSheetRequest answerSheetRequest)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAnswerSheetList(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving answer sheets.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}/removal")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteAnswerSheet(int id)
         {
             try
@@ -58,7 +58,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpPut("{id}/restoration")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreAnswerSheet(int id)
         {
             try
@@ -71,7 +71,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while restoring the answer sheet.", error = ex.Message });
             }
         }
-        [HttpPost("submit")]
+        [HttpPost("{id}/submit")]
         public async Task<IActionResult> SubmitAnswerSheet([FromBody] SubmitAnswerSheetRequest request)
         {
             if (request == null || request.AnswerIds == null || request.AnswerIds.Count == 0)

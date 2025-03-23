@@ -16,7 +16,7 @@ namespace SPSS.API.Controllers
 
 
 
-        [HttpPost("book")]
+        [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingInfoRequest bookingRequest)
         {
             try

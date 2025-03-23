@@ -12,7 +12,7 @@ namespace SPSS.API.Controllers
     public class BlogController(IMapper _mapper, IBlogService _blogService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> CreateBlog([FromForm] BlogRequest blogRequest)
+        public async Task<IActionResult> Create([FromForm] BlogRequest blogRequest)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetBlogList(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving blogs.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}/removal")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteBlog(int id)
         {
             try
@@ -57,20 +57,20 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while soft-deleting the blog.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/permanent")]
         public async Task<IActionResult> DeleteBlog(int id)
         {
             try
             {
                 await _blogService.DeleteAsync(id);
-                return Ok(new { message = "Blog deleted successfully." });
+                return Ok(new { message = "Blog permanently deleted successfully." });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while deleting the blog.", error = ex.Message });
             }
         }
-        [HttpPut("{id}/restoration")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreBlog(int id)
         {
             try

@@ -5,7 +5,7 @@ using SPSS.Entities;
 using SPSS.Service.Dto.Response;
 using SPSS.Services;
 
-[Route("api/cart")]
+[Route("carts")]
 [ApiController]
 public class CartController : ControllerBase
 {
@@ -18,7 +18,7 @@ public class CartController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet("{userId}")]
+    [HttpGet("users/{userId}")]
     public async Task<IActionResult> GetCart(string userId)
     {
         var cart = await _cartService.GetCartByUserIdAsync(userId);
@@ -30,7 +30,7 @@ public class CartController : ControllerBase
         return Ok(cartResponse);
     }
 
-    [HttpDelete("{cartId}/clear")]
+    [HttpDelete("{cartId}")]
     public async Task<IActionResult> ClearCart(int cartId)
     {
         var success = await _cartService.ClearCartAsync(cartId);

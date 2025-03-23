@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SPSS.Controllers
 {
-    [Route("api/orderitem")]
+    [Route("order-items")]
     [ApiController]
     public class OrderItemController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace SPSS.Controllers
             _mapper = mapper;
         }
 
-        [HttpDelete("remove/{orderItemId}")]
+        [HttpDelete("{orderItemId}")]
         public async Task<IActionResult> RemoveOrderItem(int orderItemId)
         {
             await _orderItemService.RemoveOrderItemAsync(orderItemId);
