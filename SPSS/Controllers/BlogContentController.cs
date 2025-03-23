@@ -7,12 +7,12 @@ using SPSS.Service.Services.BlogContentService;
 
 namespace SPSS.API.Controllers
 {
-    [Route("blogcontent")]
+    [Route("blog-contents")]
     [ApiController]
     public class BlogContentController(IMapper _mapper, IBlogContentService _blogContentService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetBlogContentList()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
@@ -30,7 +30,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> CreateBlogContent([FromForm] BlogContentRequest blogContentRequest)
+        public async Task<IActionResult> Create([FromForm] BlogContentRequest blogContentRequest)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBlogContent(int id, [FromForm] BlogContentRequest blogContentRequest)
+        public async Task<IActionResult> Update(int id, [FromForm] BlogContentRequest blogContentRequest)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBlogContent(int id)
+        public async Task<IActionResult> SoftDelete(int id)
         {
             try
             {

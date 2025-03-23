@@ -132,7 +132,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpPut("restore/{id}")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestorePromotion(int id)
         {
             try

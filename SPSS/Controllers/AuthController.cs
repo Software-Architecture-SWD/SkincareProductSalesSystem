@@ -45,7 +45,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("register-customer")]
+        [HttpPost("register/customer")]
         public async Task<IActionResult> RegisterWithRole([FromBody] UserDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) ||
@@ -101,7 +101,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("google/login")]
+        [HttpPost("login/google")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleUserLoginDTO googleLoginDTO)
         {
             try
@@ -199,7 +199,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpDelete("delete/{username}")]
+        [HttpDelete("accounts/{username}")]
         public async Task<IActionResult> SoftDeleteAccount(string username)
         {
             try
@@ -213,7 +213,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPut("restore/{username}")]
+        [HttpPut("accounts/{username}/restore")]
         public async Task<IActionResult> RestoreAccount(string username)
         {
             try

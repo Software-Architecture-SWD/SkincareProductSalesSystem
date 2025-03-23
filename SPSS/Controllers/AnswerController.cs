@@ -12,7 +12,7 @@ namespace SPSS.API.Controllers
     public class AnswerController(IMapper _mapper, IAnswerService _answerService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Createanswer([FromForm] AnswerRequest answerRequest)
+        public async Task<IActionResult> Create([FromForm] AnswerRequest answerRequest)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAnswerList(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving answers.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}/removal")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteAnswer(int id)
         {
             try
@@ -58,7 +58,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpPut("{id}/restoration")]
+        [HttpPut("{id}/restore")]
         public async Task<IActionResult> RestoreAnswer(int id)
         {
             try

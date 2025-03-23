@@ -7,12 +7,12 @@ using SPSS.Service.Services.BlogCategoryService;
 
 namespace SPSS.API.Controllers
 {
-    [Route("blogcategory")]
+    [Route("blog-categories")]
     [ApiController]
     public class BlogCategoryController(IMapper _mapper, IBlogCategoryService _blogCategoryService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> CreateBlogCategory([FromForm] BlogCategoryRequest blogCategoryRequest)
+        public async Task<IActionResult> Create([FromForm] BlogCategoryRequest blogCategoryRequest)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetBlogCategoryList()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
@@ -45,7 +45,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBlogCategory(int id, [FromForm] BlogCategoryRequest blogCategoryRequest)
+        public async Task<IActionResult> Update(int id, [FromForm] BlogCategoryRequest blogCategoryRequest)
         {
             try
             {
@@ -64,8 +64,8 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the blog category.", error = ex.Message });
             }
         }
-        [HttpDelete("{id}/removal")]
-        public async Task<IActionResult> SoftDeleteBlogCategory(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> SoftDelete(int id)
         {
             try
             {

@@ -4,7 +4,7 @@ using SPSS.Entities;
 using SPSS.Service.Dto.Response;
 using SPSS.Services.Services.CartItemService;
 
-[Route("api/cart-items")]
+[Route("cart-items")]
 [ApiController]
 public class CartItemController : ControllerBase
 {
@@ -25,15 +25,15 @@ public class CartItemController : ControllerBase
         return Ok(cartItemResponse);
     }
 
-    [HttpGet("All/{cartId}")]
-    public async Task<IActionResult> GetCartItems(int cartId)
+    [HttpGet]
+    public async Task<IActionResult> GetCartItems([FromQuery] int cartId)
     {
         var cartItems = await _cartItemService.GetCartItemsByCartIdAsync(cartId);
         var cartItemsResponse = _mapper.Map<IEnumerable<CartItemResponse>>(cartItems);
         return Ok(cartItemsResponse);
     }
 
-    [HttpPost("{cartId}")]
+    [HttpPost]
     public async Task<IActionResult> AddToCart(int cartId, int productId)
     {
         var cartItem = await _cartItemService.AddToCartAsync(cartId, productId);

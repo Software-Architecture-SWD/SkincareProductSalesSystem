@@ -7,12 +7,12 @@ using SPSS.Service.Services.AnswerDetailService;
 
 namespace SPSS.API.Controllers
 {
-    [Route("answerdetails")]
+    [Route("answer-details")]
     [ApiController]
     public class AnswerDetailController(IMapper _mapper, IAnswerDetailService _answerDetailService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAnswerDetailList()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
@@ -30,7 +30,7 @@ namespace SPSS.API.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> CreateAnswerDetail([FromBody] AnswerDetailRequest request)
+        public async Task<IActionResult> Create([FromBody] AnswerDetailRequest request)
         {
             try
             {

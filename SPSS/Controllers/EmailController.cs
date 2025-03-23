@@ -7,7 +7,7 @@ using SPSS.Service.Services.EmailService;
 
 namespace SPSS.Controllers
 {
-    [Route("email")]
+    [Route("emails")]
     [ApiController]
     public class EmailController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace SPSS.Controllers
             _emailService = emailService;
         }
 
-        [HttpPost("otp/send")]
+        [HttpPost("otp")]
         public async Task<IActionResult> SendOTP()
         {
             try
@@ -32,7 +32,7 @@ namespace SPSS.Controllers
             }
         }
 
-        [HttpPost("send")]
+        [HttpPost]
         public async Task<IActionResult> SendEmail(string userId, string senderId, string content)
         {
             try

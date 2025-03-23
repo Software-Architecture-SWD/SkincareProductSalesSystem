@@ -53,7 +53,7 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("search")]
         public async Task<IActionResult> SearchName(string name)
         {
             try

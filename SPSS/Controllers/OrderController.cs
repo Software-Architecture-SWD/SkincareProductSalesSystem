@@ -8,7 +8,7 @@ using SPSS.Service.Dto.Response;
 using SPSS.Service.Services.ProductService;
 using System.Security.Claims;
 
-[Route("api/[controller]")]
+[Route("orders")]
 [ApiController]
 [Authorize] // Requires authentication
 public class OrderController : ControllerBase
