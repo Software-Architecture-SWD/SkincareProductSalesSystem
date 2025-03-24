@@ -60,4 +60,19 @@ public class OrderRepository : IOrderRepository
             .Where(o => o.CompletedDate == date.Date && !o.isDelete)
             .CountAsync();
     }
+
+    public async Task<IEnumerable<Order>> GetOrdersAsync(DateTime? startDate, DateTime? endDate)
+    {
+        var orders = await _context.Orders
+            .Where(o => (!startDate.HasValue || o.CreatedAt >= startDate.Value) &&
+                        (!endDate.HasValue || o.CreatedAt <= endDate.Value))
+            .Include(o => o.OrderItems)
+            .Include(o => o.AppUser)
+            .ToListAsync();
+        if (orders == null)
+        {
+            return null;
+        }
+        return orders;
+    }
 }

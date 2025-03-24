@@ -9,4 +9,7 @@ public interface IOrderService
     Task<IEnumerable<Order>> GetUserOrdersAsync(string userId);
 
     Task<int> GetTotalOrdersByDayAsync(DateTime date);
+
+    Task<RevenueResponse> GetTotalRevenue(DateOnly? startDate, DateOnly? endDate);
+    Task<IEnumerable<OrderFullResponse>> GetOrders(DateOnly? startDate, DateOnly? endDate);
 }

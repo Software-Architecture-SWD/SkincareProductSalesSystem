@@ -59,7 +59,7 @@ public class OrderService : IOrderService
             isDelete = false,
         };
 
-        var createdOrder = _mapper.Map <OrderResponse> (await _unitOfWork.Orders.CreateOrderAsync(order));
+        var createdOrder = _mapper.Map<OrderResponse>(await _unitOfWork.Orders.CreateOrderAsync(order));
 
         // Call OrderItemService to create OrderItems separately
         var orderItems = await _orderItemService.CreateOrderItemsAsync(createdOrder.Id, selectedCartItems);
@@ -97,6 +97,52 @@ public class OrderService : IOrderService
         {
             _logger.LogError(ex, "Error retrieving order count for date: {Date}", date);
             throw new Exception("Error retrieving order count", ex);
+        }
+    }
+
+    public async Task<IEnumerable<OrderFullResponse>> GetOrders(DateOnly? startDate, DateOnly? endDate)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching orders for date range: {StartDate} - {EndDate}", startDate, endDate);
+            var startDateTime = startDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.MinValue;
+            var endDateTime = endDate?.ToDateTime(new TimeOnly(23, 59, 59)) ?? DateTime.MaxValue;
+            var orders = await _unitOfWork.Orders.GetOrdersAsync(startDateTime, endDateTime);
+            return _mapper.Map<IEnumerable<OrderFullResponse>>(orders);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving orders for date range: {StartDate} - {EndDate}", startDate, endDate);
+            throw new Exception("Error retrieving orders", ex);
+        }
+    }
+
+    public async Task<RevenueResponse> GetTotalRevenue(DateOnly? startDate, DateOnly? endDate)
+    {
+        try
+        {
+            _logger.LogInformation("Fetching total revenue for date range: {StartDate} - {EndDate}", startDate, endDate);
+            var startDateTime = startDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.MinValue;
+            var endDateTime = endDate?.ToDateTime(new TimeOnly(23, 59, 59)) ?? DateTime.MaxValue;
+
+            var orders = await _unitOfWork.Orders.GetOrdersAsync(startDateTime, endDateTime);
+
+            var ordersResponse = _mapper.Map<IEnumerable<OrderFullResponse>>(orders);
+            var revenue = ordersResponse.Sum(o => o.TotalAmount);
+            var totalOrders = ordersResponse.Count();
+
+            return new RevenueResponse
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                TotalRevenue = revenue,
+                TotalOrders = totalOrders
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving total revenue for date range: {StartDate} - {EndDate}", startDate, endDate);
+            throw new Exception("Error retrieving total revenue", ex);
         }
     }
 }

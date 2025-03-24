@@ -9,5 +9,6 @@ public interface IOrderRepository
     Task DeleteOrderAsync(int orderId);
     IQueryable<Category> Query();
     Task<int> GetTotalOrderByDayAsync(DateTime date);
+    Task<IEnumerable<Order>> GetOrdersAsync(DateTime? startDate, DateTime? endDate);
 }
     
