@@ -10,12 +10,13 @@ using SPSS.Dto.Response;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
 using Microsoft.EntityFrameworkCore;
+using SPSS.Services.Services.OrderItemService;
 
 namespace SPSS.Controllers
 {
     [Route("products")]
     [ApiController]
-    public class ProductsController(IFirebaseStorageService _firebaseStorageService, IMapper _mapper, IProductService _productService) : ControllerBase
+    public class ProductsController(IFirebaseStorageService _firebaseStorageService, IMapper _mapper, IProductService _productService, IOrderItemService _orderItemService) : ControllerBase
     {
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromForm] ProductRequest productRequest)
@@ -189,6 +190,39 @@ namespace SPSS.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("topsales")]
+        public async Task<IActionResult> GetTopSoldProducts(int topN, int option)
+        {
+            try
+            {
+                IEnumerable<object> products;
+
+                if (option == 1)
+                {
+                    products = await _orderItemService.GetTopSalesByRevenue(topN);
+                }
+                else if (option == 2)
+                {
+                    products = await _orderItemService.GetTopSalesByQuantity(topN);
+                }
+                else
+                {
+                    return BadRequest(new { message = "Invalid option. Use 1 for quantity or 2 for revenue." });
+                }
+
+                if (!products.Any())
+                {
+                    return NotFound(new { message = "No products found." });
+                }
+
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving products.", error = ex.Message });
             }
         }
     }

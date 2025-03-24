@@ -60,4 +60,32 @@ public class OrderController : ControllerBase
             return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
         }
     }
+
+    [HttpGet("revenue")]
+    public async Task<IActionResult> GetTotalRevenue([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
+    {
+        try
+        {
+            var result = await _orderService.GetTotalRevenue(startDate, endDate);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrders([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
+    {
+        try
+        {
+            var orders = await _orderService.GetOrders(startDate, endDate);
+            return Ok(orders);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
+        }
+    }
 }

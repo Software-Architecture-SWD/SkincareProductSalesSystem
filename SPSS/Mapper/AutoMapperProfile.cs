@@ -50,7 +50,7 @@ namespace SPSS.Mapper
 
             // ✅ Cart
             CreateMap<Cart, CartResponse>()
-                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.AppUser.NormalizedUserName));
+                .ForMember(c => c.UserName, opt => opt.MapFrom(src => src.AppUser.FullName));
             CreateMap<CartItem, CartItemResponse>()
                 .ForMember(ci => ci.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
                 .ForMember(ci => ci.ImageUrl, opt => opt.MapFrom(src => src.Product.ImageUrl));
@@ -69,7 +69,7 @@ namespace SPSS.Mapper
 
             // ✅ Order
             CreateMap<Order, OrderResponse>()
-                .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.UserName));
+                .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.FullName));
             // 🔥 ✅ **Chat (Conversation & Message)**
             CreateMap<Conversation, ConversationResponse>()
                 .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.UserId1))
@@ -109,6 +109,10 @@ namespace SPSS.Mapper
             CreateMap<BlogContent, BlogContentResponse>();
             CreateMap<BlogContentRequest, BlogContent>()
                 .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<Order, OrderFullResponse>()
+                .ForMember(o => o.UserName, opt => opt.MapFrom(src => src.AppUser.FullName))
+                .ForMember(o => o.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
         }
     }
 }

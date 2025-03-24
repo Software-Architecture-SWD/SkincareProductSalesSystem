@@ -48,5 +48,11 @@ namespace SPSS.Repository.Repositories.OrderItemService
                 .Include(i => i.Product)
                 .ToListAsync();
         }
+
+        public async Task<List<OrderItem>> GetOrderItems()
+        {
+            return await _context.OrderItems.Include(i => i.Product).ToListAsync();
+
+        }
     }
 }

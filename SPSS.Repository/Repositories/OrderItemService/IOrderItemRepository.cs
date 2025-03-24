@@ -11,5 +11,6 @@ namespace SPSS.Repository.Repositories.OrderItemService
         Task RemoveOrderItemAsync(int orderItemId);
         Task<OrderItem> GetOrderItemByIdAsync(int orderItemId);
         Task<List<OrderItem>> GetOrderItemsByOrderIdAsync(int orderId);
+        Task<List<OrderItem>> GetOrderItems();
     }
 }
