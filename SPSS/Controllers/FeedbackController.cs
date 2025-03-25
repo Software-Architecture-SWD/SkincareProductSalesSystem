@@ -7,86 +7,81 @@ using SPSS.Dto.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SPSS.Repository.Entities;
 using SPSS.Service.Dto.Response;
-using SPSS.Service.Services.ProductService;
+using SPSS.Repository.Entities;
 
 namespace SPSS.API.Controllers
 {
     [Route("feedbacks")]
     [ApiController]
-    public class FeedbackController(IFeedbackService _feedbackService, ILogger<FeedbackController> _logger) : ControllerBase
+    public class FeedbacksController(IFeedbackService feedbackService, ILogger<FeedbacksController> logger) : ControllerBase
     {
-        [HttpGet("product/{productId}/feedbacks")]
-        public async Task<ActionResult<IEnumerable<FeedbackResponse>>> GetFeedbacksForProduct(int productId)
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetFeedbacksByProduct(int productId)
         {
             try
             {
-                var feedbacks = await _feedbackService.GetFeedbacksByProductIdAsync(productId);
-                return Ok(feedbacks);
+                var feedbacks = await feedbackService.GetFeedbacksByProductIdAsync(productId);
+                return Ok(new { message = "Feedbacks retrieved successfully.", data = feedbacks });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching feedbacks for product {ProductId}", productId);
-                return StatusCode(500, "An error occurred while retrieving feedbacks.");
+                logger.LogError(ex, "Error fetching feedbacks for product {ProductId}", productId);
+                return StatusCode(500, new { message = "An error occurred while retrieving feedbacks." });
             }
         }
 
         [HttpGet("product/{productId}/paged")]
-        public async Task<IActionResult> GetPagedFeedbacksForProduct(int productId, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetPagedFeedbacksByProduct(int productId, int page = 1, int pageSize = 10)
         {
             try
             {
-                _logger.LogInformation("Fetching paged feedbacks for product ID {ProductId}, Page {Page}, PageSize {PageSize}", productId, page, pageSize);
-
-                var result = await _feedbackService.GetPagedFeedbacksByProductIdAsync(productId, page, pageSize);
+                var result = await feedbackService.GetPagedFeedbacksByProductIdAsync(productId, page, pageSize);
 
                 var response = new
                 {
-                    Feedbacks = result.Feedbacks,
-                    TotalCount = result.TotalCount,
-                    CurrentPage = page,
-                    PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize)
+                    message = "Paged feedbacks retrieved successfully.",
+                    data = result.Feedbacks,
+                    totalCount = result.TotalCount,
+                    currentPage = page,
+                    pageSize = pageSize,
+                    totalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize)
                 };
-
-                _logger.LogInformation("Returning {Count} feedbacks on page {Page} out of {TotalPages} total pages.", result.Feedbacks.Count(), page, response.TotalPages);
 
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching paged feedbacks for product {ProductId}", productId);
+                logger.LogError(ex, "Error fetching paged feedbacks for product {ProductId}", productId);
                 return StatusCode(500, new { message = "An error occurred while retrieving paged feedbacks.", error = ex.Message });
             }
         }
 
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<FeedbackResponse>> GetFeedbackById(int id)
+        public async Task<IActionResult> GetFeedbackById(int id)
         {
             try
             {
-                var feedback = await _feedbackService.GetByIdAsync(id);
+                var feedback = await feedbackService.GetByIdAsync(id);
                 if (feedback == null)
                 {
-                    return NotFound("Feedback not found.");
+                    return NotFound(new { message = "Feedback not found." });
                 }
-                return Ok(feedback);
+                return Ok(new { message = "Feedback retrieved successfully.", data = feedback });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching feedback with ID {Id}", id);
-                return StatusCode(500, "An error occurred while retrieving the feedback.");
+                logger.LogError(ex, "Error fetching feedback with ID {Id}", id);
+                return StatusCode(500, new { message = "An error occurred while retrieving the feedback.", error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddFeedback([FromBody] FeedbackRequest request)
+        public async Task<IActionResult> AddFeedback([FromBody] FeedbackRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Invalid input.", errors = ModelState });
             }
 
             try
@@ -100,37 +95,37 @@ namespace SPSS.API.Controllers
                     Created_at = DateTime.UtcNow
                 };
 
-                await _feedbackService.AddAsync(feedback);
-                return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
+                await feedbackService.AddAsync(feedback);
+                return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, new { message = "Feedback added successfully.", data = feedback });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding feedback");
-                return StatusCode(500, "An error occurred while adding the feedback.");
+                logger.LogError(ex, "Error adding feedback");
+                return StatusCode(500, new { message = "An error occurred while adding the feedback.", error = ex.Message });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateFeedback(int id, [FromBody] FeedbackRequest request)
+        public async Task<IActionResult> UpdateFeedback(int id, [FromBody] FeedbackRequest request)
         {
             try
             {
-                var existingFeedback = await _feedbackService.GetByIdAsync(id);
+                var existingFeedback = await feedbackService.GetByIdAsync(id);
                 if (existingFeedback == null)
                 {
-                    return NotFound("Feedback not found.");
+                    return NotFound(new { message = "Feedback not found." });
                 }
 
                 existingFeedback.Rating = request.Rating;
                 existingFeedback.Comment = request.Comment ?? string.Empty;
 
-                await _feedbackService.UpdateAsync(existingFeedback);
-                return Ok("Feedback updated successfully.");
+                await feedbackService.UpdateAsync(existingFeedback);
+                return Ok(new { message = "Feedback updated successfully." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating feedback with ID {Id}", id);
-                return StatusCode(500, "An error occurred while updating the feedback.");
+                logger.LogError(ex, "Error updating feedback with ID {Id}", id);
+                return StatusCode(500, new { message = "An error occurred while updating the feedback.", error = ex.Message });
             }
         }
 
@@ -139,36 +134,39 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                var product = await _feedbackService.GetByIdAsync(id);
-                if (product == null)
-                {
-                    return NotFound(new { message = "Feedback not found." });
-                }
-                await _feedbackService.DeleteAsync(id);
-                return Ok("Delete successfully!");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred while retrieving the product.", error = ex.Message });
-            }
-        }
-        [HttpPut("{id}/restore")]
-        public async Task<IActionResult> RestoreFeedback(int id)
-        {
-            try
-            {
-                var feedback = await _feedbackService.GetByIdAsync(id);
+                var feedback = await feedbackService.GetByIdAsync(id);
                 if (feedback == null)
                 {
                     return NotFound(new { message = "Feedback not found." });
                 }
 
-                await _feedbackService.RestoreAsync(id);
+                await feedbackService.DeleteAsync(id);
+                return Ok(new { message = "Feedback deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error deleting feedback with ID {Id}", id);
+                return StatusCode(500, new { message = "An error occurred while deleting the feedback.", error = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}/restore")]
+        public async Task<IActionResult> RestoreFeedback(int id)
+        {
+            try
+            {
+                var feedback = await feedbackService.GetByIdAsync(id);
+                if (feedback == null)
+                {
+                    return NotFound(new { message = "Feedback not found." });
+                }
+
+                await feedbackService.RestoreAsync(id);
                 return Ok(new { message = "Feedback restored successfully." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error restoring feedback with ID {Id}", id);
+                logger.LogError(ex, "Error restoring feedback with ID {Id}", id);
                 return StatusCode(500, new { message = "An error occurred while restoring the feedback.", error = ex.Message });
             }
         }

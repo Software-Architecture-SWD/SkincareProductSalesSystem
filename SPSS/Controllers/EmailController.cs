@@ -2,61 +2,60 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SPSS.Dto.Account;
-using System;
 using SPSS.Service.Services.EmailService;
 
-namespace SPSS.Controllers
+namespace SPSS.API.Controllers
 {
     [Route("emails")]
     [ApiController]
-    public class EmailController : ControllerBase
+    public class EmailsController : ControllerBase
     {
-        private readonly IEmailService _emailService;
+        private readonly IEmailService emailService;
 
-        public EmailController(IEmailService emailService)
+        public EmailsController(IEmailService emailService)
         {
-            _emailService = emailService;
+            this.emailService = emailService;
         }
 
         [HttpPost("otp")]
-        public async Task<IActionResult> SendOTP()
+        public async Task<IActionResult> SendOtp()
         {
             try
             {
-                var result = await _emailService.GenerateAndSendOTP(HttpContext);
-                return Ok(result);
+                var result = await emailService.GenerateAndSendOTP(HttpContext);
+                return Ok(new { message = "OTP sent successfully.", data = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = ex.Message });
+                return BadRequest(new { message = "Failed to send OTP.", error = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendEmail(string userId, string senderId, string content)
+        public async Task<IActionResult> SendEmail([FromQuery] string userId, [FromQuery] string senderId, [FromQuery] string content)
         {
             try
             {
-                await _emailService.SendEmail(userId, senderId, content);
-                return Ok("Email sent");
+                await emailService.SendEmail(userId, senderId, content);
+                return Ok(new { message = "Email sent successfully." });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "Failed to send email.", error = ex.Message });
             }
         }
 
         [HttpPost("otp/verify")]
-        public async Task<IActionResult> VerifyOTP([FromBody] OTPVerificationRequest request)
+        public async Task<IActionResult> VerifyOtp([FromBody] OTPVerificationRequest request)
         {
             try
             {
-                var result = await _emailService.VerifyOTP(request);
-                return Ok(result);
+                var result = await emailService.VerifyOTP(request);
+                return Ok(new { message = "OTP verified successfully.", data = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = ex.Message });
+                return BadRequest(new { message = "Failed to verify OTP.", error = ex.Message });
             }
         }
     }

@@ -2,90 +2,113 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Entities;
-using SPSS.Repository.Enum;
 using SPSS.Service.Dto.Request;
 using SPSS.Service.Dto.Response;
 using SPSS.Service.Services.ProductService;
-using System.Security.Claims;
 
-[Route("orders")]
-[ApiController]
-[Authorize] // Requires authentication
-public class OrderController : ControllerBase
+namespace SPSS.API.Controllers
 {
-    private readonly IOrderService _orderService;
-    private readonly IMapper _mapper;
-
-    public OrderController(IOrderService orderService, IMapper mapper)
+    [Route("orders")]
+    [ApiController]
+    [Authorize]
+    public class OrdersController : ControllerBase
     {
-        _orderService = orderService;
-        _mapper = mapper;
-    }
+        private readonly IOrderService orderService;
+        private readonly IMapper mapper;
 
-    [HttpPost("{userId}")]
-    public async Task<IActionResult> CreateOrder(string userId, [FromBody] CreateOrderRequest request)
-    {
-        try
+        public OrdersController(IOrderService orderService, IMapper mapper)
         {
-            var order = await _orderService.CreateOrderAsync(userId, request.CartItemIds);
-            if (order == null) return BadRequest(new { message = "Failed to create order." });
-            return Ok(order);
+            this.orderService = orderService;
+            this.mapper = mapper;
         }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
 
-    [HttpGet("{orderId}")]
-    public async Task<IActionResult> GetOrderById(int orderId)
-    {
-        var order = await _orderService.GetOrderByIdAsync(orderId);
-        if (order == null) return NotFound();
-        var orderResponse = _mapper.Map<OrderResponse>(order);
-        return Ok(orderResponse);
-    }
+        [HttpPost("{userId}")]
+        public async Task<IActionResult> CreateOrder(string userId, [FromBody] CreateOrderRequest request)
+        {
+            try
+            {
+                var order = await orderService.CreateOrderAsync(userId, request.CartItemIds);
+                if (order == null)
+                {
+                    return BadRequest(new { message = "Failed to create order." });
+                }
 
+                var orderResponse = mapper.Map<OrderResponse>(order);
+                return Ok(new { message = "Order created successfully.", data = orderResponse });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the order.", error = ex.Message });
+            }
+        }
 
-    [HttpGet("total")]
-    public async Task<IActionResult> GetTotalOrdersByDay([FromQuery] DateTime date)
-    {
-        try
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(int orderId)
         {
-            var result = await _orderService.GetTotalOrdersByDayAsync(date);
-            return Ok(new { Date = date, TotalOrders = result });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
-        }
-    }
+            var order = await orderService.GetOrderByIdAsync(orderId);
+            if (order == null)
+            {
+                return NotFound(new { message = "Order not found." });
+            }
 
-    [HttpGet("revenue")]
-    public async Task<IActionResult> GetTotalRevenue([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
-    {
-        try
-        {
-            var result = await _orderService.GetTotalRevenue(startDate, endDate);
-            return Ok(result);
+            var orderResponse = mapper.Map<OrderResponse>(order);
+            return Ok(new { message = "Order retrieved successfully.", data = orderResponse });
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
-        }
-    }
 
-    [HttpGet]
-    public async Task<IActionResult> GetOrders([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
-    {
-        try
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalOrdersByDay([FromQuery] DateTime date)
         {
-            var orders = await _orderService.GetOrders(startDate, endDate);
-            return Ok(orders);
+            try
+            {
+                var totalOrders = await orderService.GetTotalOrdersByDayAsync(date);
+                return Ok(new
+                {
+                    message = "Total orders retrieved successfully.",
+                    data = new { date, totalOrders }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
         }
-        catch (Exception ex)
+
+        [HttpGet("revenue")]
+        public async Task<IActionResult> GetTotalRevenue([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
         {
-            return StatusCode(500, new { Message = "Internal Server Error", Details = ex.Message });
+            try
+            {
+                var revenue = await orderService.GetTotalRevenue(startDate, endDate);
+                return Ok(new
+                {
+                    message = "Revenue retrieved successfully.",
+                    data = revenue
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOrders([FromQuery] DateOnly? startDate, [FromQuery] DateOnly? endDate)
+        {
+            try
+            {
+                var orders = await orderService.GetOrders(startDate, endDate);
+                var orderResponses = mapper.Map<IEnumerable<OrderResponse>>(orders);
+
+                return Ok(new
+                {
+                    message = "Orders retrieved successfully.",
+                    data = orderResponses
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
         }
     }
 }
