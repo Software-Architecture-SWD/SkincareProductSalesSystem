@@ -100,10 +100,19 @@ namespace SPSS.API.Controllers
                 {
                     return NotFound(new { message = "Product not found." });
                 }
+
                 mapper.Map(productRequest, product);
-                using var stream = productRequest.ImageFile.OpenReadStream();
-                var fileName = productRequest.ImageFile.FileName;
-                product.ImageUrl = await firebaseStorageService.UploadImageAsync(stream, fileName);
+
+                product.Price = productRequest.Price ?? product.Price;
+                product.StockQuantity = productRequest.StockQuantity ?? product.StockQuantity;
+
+                if (productRequest.ImageFile != null)
+                {
+                    using var stream = productRequest.ImageFile.OpenReadStream();
+                    var fileName = productRequest.ImageFile.FileName;
+                    product.ImageUrl = await firebaseStorageService.UploadImageAsync(stream, fileName);
+                }
+
                 await productService.UpdateAsync(id, product);
                 return Ok(new { message = "Product updated successfully." });
             }
@@ -112,6 +121,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the product.", error = ex.Message });
             }
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
