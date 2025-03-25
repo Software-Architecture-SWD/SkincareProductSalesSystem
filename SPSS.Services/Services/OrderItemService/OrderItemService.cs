@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using SPSS.Dto.Response;
 using SPSS.Entities;
 using SPSS.Repository.Entities;
 using SPSS.Repository.Repositories.OrderItemService;
@@ -49,6 +50,38 @@ namespace SPSS.Services.Services.OrderItemService
 
             await _unitOfWork.OrderItems.AddOrderItemsAsync(orderItems);
             return true;
+        }
+
+        public async Task<IEnumerable<ProductSalesByQuantityResponse>> GetTopSalesByQuantity(int topN)
+        {
+           var orderItems = await _unitOfWork.OrderItems.GetOrderItems();
+           var productSales = orderItems.GroupBy(i => i.ProductId)
+              .Select(g => new ProductSalesByQuantityResponse
+              {
+                  Id = g.Key,
+                  TotalQuantity = g.Sum(oi => oi.Quantity),
+                  Product = _mapper.Map<ProductResponse>(g.First().Product)
+              })
+              .OrderByDescending(p => p.TotalQuantity)
+              .Take(topN);
+            var productSalesResponse = _mapper.Map<IEnumerable<ProductSalesByQuantityResponse>>(productSales);
+            return productSalesResponse;
+        }
+
+        public async Task<IEnumerable<ProductSalesBySalesResponse>> GetTopSalesByRevenue(int topN)
+        {
+            var orderItems = await _unitOfWork.OrderItems.GetOrderItems();
+            var productSales = orderItems.GroupBy(i => i.ProductId)
+               .Select(g => new ProductSalesBySalesResponse
+               {
+                   Id = g.Key,
+                   TotalSales = g.Sum(oi => oi.TotalPrice),
+                   Product = _mapper.Map<ProductResponse>(g.First().Product)
+               })
+               .OrderByDescending(p => p.TotalSales)
+               .Take(topN);
+            var productSalesResponse = _mapper.Map<IEnumerable<ProductSalesBySalesResponse>>(productSales);
+            return productSalesResponse;
         }
     }
 }
