@@ -6,6 +6,8 @@ using SPSS.Entities;
 using SPSS.Service.Services.FirebaseStorageService;
 using SPSS.Service.Services.ProductService;
 using SPSS.Services.Services.OrderItemService;
+using System.IO;
+using SPSS.Service.Dto.Request;
 
 namespace SPSS.API.Controllers
 {
@@ -89,7 +91,7 @@ namespace SPSS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductRequest productRequest)
+        public async Task<IActionResult> UpdateProduct(int id, [FromForm] ProductRequestUpdate productRequest)
         {
             try
             {
@@ -98,14 +100,10 @@ namespace SPSS.API.Controllers
                 {
                     return NotFound(new { message = "Product not found." });
                 }
-
-                var brand = await productService.GetBrandByNameAsync(productRequest.BrandName);
-                var category = await productService.GetCategoryByNameAsync(productRequest.CategoryName);
-
                 mapper.Map(productRequest, product);
-                product.BrandId = brand.Id;
-                product.CategoryId = category.Id;
-
+                using var stream = productRequest.ImageFile.OpenReadStream();
+                var fileName = productRequest.ImageFile.FileName;
+                product.ImageUrl = await firebaseStorageService.UploadImageAsync(stream, fileName);
                 await productService.UpdateAsync(id, product);
                 return Ok(new { message = "Product updated successfully." });
             }
