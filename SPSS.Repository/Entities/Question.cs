@@ -8,7 +8,7 @@ namespace SPSS.Entities
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(155)]
         public string QuestionDESC { get; set; } = string.Empty;
         public bool isDelete { get; set; } = false;
         public virtual ICollection<Answer> Answers { get; set; } = new List<Answer>();
