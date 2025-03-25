@@ -15,7 +15,20 @@ namespace SPSS.Mapper
             // ✅ Product
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
-            CreateMap<ProductRequestUpdate, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<ProductRequestUpdate, Product>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember, destMember, context) =>
+            {
+                if (srcMember is string str)
+                    return !string.IsNullOrWhiteSpace(str) && str.ToLowerInvariant() != "string";
+
+                if (srcMember is int intVal)
+                    return intVal != 0;
+
+                if (srcMember is decimal decVal)
+                    return decVal != 0;
+
+                return srcMember != null;
+            }));
 
             // ✅ Question
             CreateMap<Question, QuestionResponse>();

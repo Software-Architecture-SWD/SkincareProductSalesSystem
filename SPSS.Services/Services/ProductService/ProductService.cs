@@ -129,25 +129,38 @@ public class ProductService(IUnitOfWork _unitOfWork, ILogger<ProductService> _lo
         }
     }
 
-    public async Task UpdateAsync(int id, Product p)
+    public async Task UpdateAsync(int id, Product updatedProduct)
     {
         try
         {
-            _logger.LogInformation("Updating product ID {Id}", p.Id);
-            var product = await _unitOfWork.Products.GetByIdAsync(id);
-            if (product == null)
+            _logger.LogInformation("Updating product ID {Id}", id);
+
+            var existingProduct = await _unitOfWork.Products.GetByIdAsync(id);
+            if (existingProduct == null)
             {
                 _logger.LogWarning("Product with ID {Id} not found.", id);
                 throw new KeyNotFoundException($"Product with ID {id} not found.");
             }
-            await _unitOfWork.Products.UpdateAsync(p);
+
+            existingProduct.ProductName = updatedProduct.ProductName ?? existingProduct.ProductName;
+            existingProduct.Price = updatedProduct.Price != 0 ? updatedProduct.Price : existingProduct.Price;
+            existingProduct.StockQuantity = updatedProduct.StockQuantity != 0 ? updatedProduct.StockQuantity : existingProduct.StockQuantity;
+            existingProduct.Ingredients = updatedProduct.Ingredients ?? existingProduct.Ingredients;
+            existingProduct.UsageInstructions = updatedProduct.UsageInstructions ?? existingProduct.UsageInstructions;
+            existingProduct.Benefits = updatedProduct.Benefits ?? existingProduct.Benefits;
+            existingProduct.ImageUrl = updatedProduct.ImageUrl ?? existingProduct.ImageUrl;
+            existingProduct.BrandId = updatedProduct.BrandId != 0 ? updatedProduct.BrandId : existingProduct.BrandId;
+            existingProduct.CategoryId = updatedProduct.CategoryId != 0 ? updatedProduct.CategoryId : existingProduct.CategoryId;
+
+            await _unitOfWork.Products.UpdateAsync(existingProduct);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating product ID {Id}", p.Id);
+            _logger.LogError(ex, "Error updating product ID {Id}", id);
             throw;
         }
     }
+
 
     public async Task<Category> GetCategoryByNameAsync(string categoryName)
     {
