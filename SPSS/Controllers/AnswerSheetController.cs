@@ -9,52 +9,73 @@ namespace SPSS.API.Controllers
 {
     [Route("answer-sheets")]
     [ApiController]
-    public class AnswerSheetController(IMapper _mapper, IAnswerSheetService _answerSheetService) : ControllerBase
+    public class AnswerSheetsController(IMapper mapper, IAnswerSheetService answerSheetService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] AnswerSheetRequest answerSheetRequest)
+        public async Task<IActionResult> CreateAnswerSheet([FromForm] AnswerSheetRequest answerSheetRequest)
         {
             try
             {
-                var answerSheet = _mapper.Map<AnswerSheet>(answerSheetRequest);
-                await _answerSheetService.AddAsync(answerSheet);
-                var answerSheetResponse = _mapper.Map<AnswerSheetResponse>(answerSheet);
+                var answerSheet = mapper.Map<AnswerSheet>(answerSheetRequest);
+                await answerSheetService.AddAsync(answerSheet);
+                var answerSheetResponse = mapper.Map<AnswerSheetResponse>(answerSheet);
                 return Ok(answerSheetResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while creating the answer sheet.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while creating the answer sheet.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetPagedAnswerSheets(int page = 1, int pageSize = 10)
         {
             try
             {
-                var (answerSheets, totalCount) = await _answerSheetService.GetPagedAnswerSheetsAsync(page, pageSize);
+                var (answerSheets, totalCount) = await answerSheetService.GetPagedAnswerSheetsAsync(page, pageSize);
                 if (!answerSheets.Any())
                 {
                     return NotFound(new { message = "No answer sheets found." });
                 }
-                var answerSheetResponses = _mapper.Map<IEnumerable<AnswerSheetResponse>>(answerSheets);
-                return Ok(new { answerSheetResponses, totalCount, page, pageSize });
+
+                var answerSheetResponses = mapper.Map<IEnumerable<AnswerSheetResponse>>(answerSheets);
+                return Ok(new
+                {
+                    answerSheetResponses,
+                    totalCount,
+                    page,
+                    pageSize
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving answer sheets.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving answer sheets.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> SoftDeleteAnswerSheet(int id)
+        public async Task<IActionResult> DeleteAnswerSheet(int id)
         {
             try
             {
-                await _answerSheetService.SoftDeleteAsync(id);
-                return Ok(new { message = "Answer sheet soft-deleted successfully." });
+                await answerSheetService.SoftDeleteAsync(id);
+                return Ok(new { message = "Answer sheet deleted successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while soft-deleting the answer sheet.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while deleting the answer sheet.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -63,38 +84,48 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                await _answerSheetService.RestoreAsync(id);
+                await answerSheetService.RestoreAsync(id);
                 return Ok(new { message = "Answer sheet restored successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while restoring the answer sheet.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while restoring the answer sheet.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpPost("{id}/submit")]
-        public async Task<IActionResult> SubmitAnswerSheet([FromBody] SubmitAnswerSheetRequest request)
+        public async Task<IActionResult> SubmitAnswerSheet([FromBody] SubmitAnswerSheetRequest submitAnswerSheetRequest)
         {
-            if (request == null || request.AnswerIds == null || request.AnswerIds.Count == 0)
+            if (submitAnswerSheetRequest == null || submitAnswerSheetRequest.AnswerIds == null || submitAnswerSheetRequest.AnswerIds.Count == 0)
             {
                 return BadRequest(new { message = "AnswerSheetId and AnswerIds are required." });
             }
 
             try
             {
-                // Gọi service để tạo AnswerDetails, cập nhật AnswerSheet và lấy kết quả loại da
-                var (skinType, totalPoints) = await _answerSheetService.SubmitAnswerSheetsAsync(request.AnswerSheetId, request.AnswerIds);
+                var (skinType, totalPoints) = await answerSheetService.SubmitAnswerSheetsAsync(
+                    submitAnswerSheetRequest.AnswerSheetId,
+                    submitAnswerSheetRequest.AnswerIds
+                );
 
                 return Ok(new
                 {
-                    SkinType = skinType,
-                    TotalPoints = totalPoints
+                    skinType,
+                    totalPoints
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error submitting answer sheets", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while submitting the answer sheet.",
+                    error = ex.Message
+                });
             }
         }
-
     }
 }
