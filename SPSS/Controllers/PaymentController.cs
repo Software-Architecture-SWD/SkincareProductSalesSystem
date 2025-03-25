@@ -11,12 +11,12 @@ namespace SPSS.API.Controllers
     public class PaymentController(IVNPayService _vnPayService) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description, int paymentId)
+        public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description, int orderId)
         {
             try
             {
                 var ipAddress = NetworkHelper.GetIpAddress(HttpContext);
-                var paymentUrl = await _vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, paymentId);
+                var paymentUrl = await _vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, orderId);
                 return Created(paymentUrl, paymentUrl);
             }
             catch (Exception ex)
@@ -30,13 +30,13 @@ namespace SPSS.API.Controllers
         {
             if (!Request.QueryString.HasValue)
             {
-                return  NotFound("Không tìm thấy thông tin thanh toán.");
+                return NotFound("Không tìm thấy thông tin thanh toán.");
             }
 
             try
             {
                 var paymentResult = _vnPayService.ProcessIpnAction(Request.Query);
-
+               
                 if (paymentResult.IsCompleted)
                 {
                     return Ok(paymentResult);
@@ -50,24 +50,27 @@ namespace SPSS.API.Controllers
             }
         }
 
-        [HttpGet("results")]
-        public async Task <ActionResult<string>> Callback()
-        {
+        //[HttpGet("results")]
+        //public async Task<ActionResult<string>> Callback()
+        //{
 
-            if (!Request.QueryString.HasValue)
-            {
-                return NotFound("Không tìm thấy thông tin thanh toán.");
-            }
+        //    if (!Request.QueryString.HasValue)
+        //    {
+        //        return NotFound("Không tìm thấy thông tin thanh toán.");
+        //    }
 
-            try
-            {
-                var resultDescription = await _vnPayService.ProcessPaymentCallback(Request.Query);
-                return Ok(resultDescription);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //    try
+        //    {
+        //        var resultDescription = await _vnPayService.ProcessPaymentCallback(Request.Query);
+        //        return Ok(resultDescription);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
+
+
+
     }
 }

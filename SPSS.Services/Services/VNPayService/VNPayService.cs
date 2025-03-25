@@ -82,28 +82,31 @@ namespace SPSS.Service.Services.VNPayService
                 var paymentResult =  _vnpay.GetPaymentResult(query);
                 var orderId = _httpContextAccessor.HttpContext?.Session.GetInt32("OrderId")??0;
                 var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
-                var payment = await _unitOfWork.Payments.GetPaymentByOrderIdAsync(orderId);
+                //var payment = await _unitOfWork.Payments.GetPaymentByOrderIdAsync(orderId);
 
                 if (paymentResult.IsSuccess)
                 {
                     _logger.LogInformation("Thanh toán thành công - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Cập nhật trạng thái đơn hàng vào DB
                     order.Status = OrderStatus.Completed;
-                    payment.PaymentStatus = PaymentStatus.Success;
-                    payment.TransactionId = paymentResult.VnpayTransactionId.ToString();
-                    payment.PaymentDate = paymentResult.Timestamp;
-                    payment.CreatedAt = DateTime.UtcNow;
-
-
-
+                    //add payemnt to db
+                    var payment = new Payment
+                    {
+                        OrderId = order.Id,
+                        PaymentStatus = PaymentStatus.Success,
+                        TransactionId = paymentResult.VnpayTransactionId.ToString(),
+                        PaymentDate = paymentResult.Timestamp,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _unitOfWork.Payments.AddPaymentAsync(payment);
                 }
                 else
                 {
                     _logger.LogWarning("Thanh toán thất bại - PaymentId: {PaymentId}", paymentResult.PaymentId);
                     // TODO: Xử lý khi thanh toán thất bại (ví dụ: hủy đơn hàng)
                     order.Status = OrderStatus.Canceled;
-                    payment.PaymentStatus = PaymentStatus.Failed;
-                    payment.CreatedAt = DateTime.UtcNow;
+                    //payment.PaymentStatus = PaymentStatus.Failed;
+                    //payment.CreatedAt = DateTime.UtcNow;
 
                 }
 
