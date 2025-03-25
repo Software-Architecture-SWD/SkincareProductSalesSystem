@@ -15,6 +15,7 @@ namespace SPSS.Mapper
             // ✅ Product
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<ProductRequestUpdate, Product>().ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
             // ✅ Question
             CreateMap<Question, QuestionResponse>();
