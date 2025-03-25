@@ -12,7 +12,7 @@ namespace SPSS.Entities
         public int QuestionId { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(155)]
         public string AnswerText { get; set; } = string.Empty;
 
         [Required]

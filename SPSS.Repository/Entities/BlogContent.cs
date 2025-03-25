@@ -15,10 +15,11 @@ namespace SPSS.Repository.Entities
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(255)]
+        [MaxLength(250)]
         public string Title { get; set; } = string.Empty; // Tương ứng với subTitle trong dữ liệu mẫu
 
         [Required]
+        [MaxLength(600)]
         public string Content { get; set; } = string.Empty;
 
         public string Img { get; set; } = string.Empty;
