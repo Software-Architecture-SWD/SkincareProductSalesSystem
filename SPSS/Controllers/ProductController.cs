@@ -101,15 +101,24 @@ namespace SPSS.API.Controllers
                     return NotFound(new { message = "Product not found." });
                 }
 
-                mapper.Map(productRequest, product);
+                if (!string.IsNullOrEmpty(productRequest.BrandName))
+                {
+                    var brand = await productService.GetBrandByNameAsync(productRequest.BrandName);
+                    if (brand != null) product.BrandId = brand.Id;
+                }
 
-                product.Price = productRequest.Price ?? product.Price;
-                product.StockQuantity = productRequest.StockQuantity ?? product.StockQuantity;
+                if (!string.IsNullOrEmpty(productRequest.CategoryName))
+                {
+                    var category = await productService.GetCategoryByNameAsync(productRequest.CategoryName);
+                    if (category != null) product.CategoryId = category.Id;
+                }
+
+                mapper.Map(productRequest, product);
 
                 if (productRequest.ImageFile != null)
                 {
                     using var stream = productRequest.ImageFile.OpenReadStream();
-                    var fileName = productRequest.ImageFile.FileName;
+                    var fileName = $"{Guid.NewGuid()}_{productRequest.ImageFile.FileName}";
                     product.ImageUrl = await firebaseStorageService.UploadImageAsync(stream, fileName);
                 }
 
@@ -121,6 +130,7 @@ namespace SPSS.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the product.", error = ex.Message });
             }
         }
+
 
 
         [HttpDelete("{id}")]
