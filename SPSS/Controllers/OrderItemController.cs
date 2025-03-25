@@ -1,46 +1,70 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SPSS.Entities;
-using SPSS.Repository.Entities;
 using SPSS.Service.Dto.Response;
 using SPSS.Services.Services.OrderItemService;
-using System.Threading.Tasks;
 
-namespace SPSS.Controllers
+namespace SPSS.API.Controllers
 {
     [Route("order-items")]
     [ApiController]
-    public class OrderItemController : ControllerBase
+    public class OrderItemsController : ControllerBase
     {
-        private readonly IOrderItemService _orderItemService;
-        private readonly IMapper _mapper;
+        private readonly IOrderItemService orderItemService;
+        private readonly IMapper mapper;
 
-        public OrderItemController(IOrderItemService orderItemService, IMapper mapper)
+        public OrderItemsController(IOrderItemService orderItemService, IMapper mapper)
         {
-            _orderItemService = orderItemService;
-            _mapper = mapper;
+            this.orderItemService = orderItemService;
+            this.mapper = mapper;
         }
 
         [HttpDelete("{orderItemId}")]
-        public async Task<IActionResult> RemoveOrderItem(int orderItemId)
+        public async Task<IActionResult> DeleteOrderItem(int orderItemId)
         {
-            await _orderItemService.RemoveOrderItemAsync(orderItemId);
-            return Ok(new { message = "Order item removed." });
+            try
+            {
+                await orderItemService.RemoveOrderItemAsync(orderItemId);
+                return Ok(new { message = "Order item removed successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to remove order item.", error = ex.Message });
+            }
         }
 
         [HttpGet("{orderItemId}")]
-        public async Task<IActionResult> GetOrderItem(int orderItemId)
+        public async Task<IActionResult> GetOrderItemById(int orderItemId)
         {
-            var orderItem = await _orderItemService.GetOrderItemByIdAsync(orderItemId);
-            return Ok(orderItem);
+            try
+            {
+                var orderItem = await orderItemService.GetOrderItemByIdAsync(orderItemId);
+                if (orderItem == null)
+                {
+                    return NotFound(new { message = "Order item not found." });
+                }
+
+                var orderItemResponse = mapper.Map<OrderItemResponse>(orderItem);
+                return Ok(new { message = "Order item retrieved successfully.", data = orderItemResponse });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to retrieve order item.", error = ex.Message });
+            }
         }
 
         [HttpGet("order/{orderId}")]
-        public async Task<IActionResult> GetOrderItems(int orderId)
+        public async Task<IActionResult> GetOrderItemsByOrderId(int orderId)
         {
-            var orderItems = await _orderItemService.GetOrderItemsByOrderIdAsync(orderId);
-            var orderItemsResponse = _mapper.Map<IEnumerable<OrderItemResponse>>(orderItems);
-            return Ok(orderItemsResponse);
+            try
+            {
+                var orderItems = await orderItemService.GetOrderItemsByOrderIdAsync(orderId);
+                var orderItemResponses = mapper.Map<IEnumerable<OrderItemResponse>>(orderItems);
+                return Ok(new { message = "Order items retrieved successfully.", data = orderItemResponses });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to retrieve order items.", error = ex.Message });
+            }
         }
     }
 }

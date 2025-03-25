@@ -6,145 +6,147 @@ using SPSS.Service.Dto.Request;
 using SPSS.Service.Dto.Response;
 using SPSS.Service.Services;
 using SPSS.API.Hubs;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SPSS.API.Controllers
 {
     [ApiController]
     [Route("chats")]
-    public class ChatController : ControllerBase
+    public class ChatsController : ControllerBase
     {
-        private readonly IChatService _chatService;
-        private readonly IHubContext<ChatHub> _chatHub;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ChatController> _logger;
+        private readonly IChatService chatService;
+        private readonly IHubContext<ChatHub> chatHub;
+        private readonly IMapper mapper;
+        private readonly ILogger<ChatsController> logger;
 
-        public ChatController(IChatService chatService, IHubContext<ChatHub> chatHub, IMapper mapper, ILogger<ChatController> logger)
+        public ChatsController(IChatService chatService, IHubContext<ChatHub> chatHub, IMapper mapper, ILogger<ChatsController> logger)
         {
-            _chatService = chatService;
-            _chatHub = chatHub;
-            _mapper = mapper;
-            _logger = logger;
+            this.chatService = chatService;
+            this.chatHub = chatHub;
+            this.mapper = mapper;
+            this.logger = logger;
         }
 
-        // ✅ 1. API Customer starts a conversation
+        // 1. Customer starts a conversation
         [HttpPost]
         public async Task<IActionResult> StartConversation([FromBody] StartChatRequest request)
         {
             try
             {
-                _logger.LogInformation("Customer {CustomerId} started a conversation.", request.CustomerId);
+                logger.LogInformation("Customer {CustomerId} started a conversation.", request.CustomerId);
 
-                var response = await _chatService.StartConversationAsync(request);
-                if (!response.Success) return BadRequest(new { message = response.Message });
+                var response = await chatService.StartConversationAsync(request);
+                if (!response.Success)
+                    return BadRequest(new { message = response.Message });
 
                 return Ok(new { message = response.Message, data = response.Data });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while Customer {CustomerId} started a conversation.", request.CustomerId);
+                logger.LogError(ex, "Error while starting conversation for Customer {CustomerId}.", request.CustomerId);
                 return StatusCode(500, new { message = "Error while starting the conversation." });
             }
         }
 
-        // ✅ 2. API Expert accepts a conversation
+        // 2. Expert accepts a conversation
         [HttpPost("{conversationId}/accept")]
         public async Task<IActionResult> AcceptConversation(int conversationId, [FromBody] AcceptChatRequest request)
         {
             try
             {
-                _logger.LogInformation("Expert {ExpertId} accepted conversation ID {ConversationId}", request.ExpertId, conversationId);
+                logger.LogInformation("Expert {ExpertId} accepted conversation {ConversationId}.", request.ExpertId, conversationId);
 
-                var response = await _chatService.AcceptConversationAsync(conversationId, request);
-                if (!response.Success) return BadRequest(new { message = response.Message });
+                var response = await chatService.AcceptConversationAsync(conversationId, request);
+                if (!response.Success)
+                    return BadRequest(new { message = response.Message });
 
                 return Ok(new { message = response.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while Expert {ExpertId} accepting conversation ID {ConversationId}.", request.ExpertId, conversationId);
+                logger.LogError(ex, "Error while Expert {ExpertId} accepting conversation {ConversationId}.", request.ExpertId, conversationId);
                 return StatusCode(500, new { message = "Error while accepting the conversation." });
             }
         }
 
-        // ✅ 3. API Send message
+        // 3. Send message
         [HttpPost("{conversationId}/messages")]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
         {
             try
             {
-                _logger.LogInformation("User {SenderId} sent a message in conversation ID {ConversationId}.", request.SenderId, request.ConversationId);
+                logger.LogInformation("User {SenderId} sent a message in conversation {ConversationId}.", request.SenderId, request.ConversationId);
 
-                var response = await _chatService.SendMessageAsync(request);
-                if (!response.Success) return BadRequest(new { message = response.Message });
+                var response = await chatService.SendMessageAsync(request);
+                if (!response.Success)
+                    return BadRequest(new { message = response.Message });
 
-                // 🔥 Notify via SignalR
-                await _chatHub.Clients.Group($"conversation-{request.ConversationId}")
+                // Notify via SignalR
+                await chatHub.Clients.Group($"conversation-{request.ConversationId}")
                     .SendAsync("ReceiveMessage", new { request.SenderId, request.Message });
 
                 return Ok(new { message = response.Message, data = response.Data });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while sending message in conversation ID {ConversationId}.", request.ConversationId);
+                logger.LogError(ex, "Error while sending message in conversation {ConversationId}.", request.ConversationId);
                 return StatusCode(500, new { message = "Error while sending the message." });
             }
         }
 
-        // ✅ 4. API Get chat history
+        // 4. Get chat history
         [HttpGet("{conversationId}/messages")]
         public async Task<IActionResult> GetChatHistory(int conversationId)
         {
             try
             {
-                _logger.LogInformation("Fetching chat history for conversation ID {ConversationId}.", conversationId);
+                logger.LogInformation("Fetching chat history for conversation {ConversationId}.", conversationId);
 
-                var messages = await _chatService.GetChatHistoryAsync(conversationId);
+                var messages = await chatService.GetChatHistoryAsync(conversationId);
                 return Ok(new { message = "Chat history retrieved successfully.", data = messages });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while fetching chat history for conversation ID {ConversationId}.", conversationId);
+                logger.LogError(ex, "Error while retrieving chat history for conversation {ConversationId}.", conversationId);
                 return StatusCode(500, new { message = "Error while retrieving chat history." });
             }
         }
 
-        // ✅ 5. API Get waiting conversations
+        // 5. Get waiting conversations
         [HttpGet("waiting")]
         public async Task<IActionResult> GetWaitingConversations()
         {
             try
             {
-                _logger.LogInformation("Fetching waiting conversations.");
-                var conversations = await _chatService.GetWaitingConversationsAsync();
+                logger.LogInformation("Fetching waiting conversations.");
+
+                var conversations = await chatService.GetWaitingConversationsAsync();
                 return Ok(new { message = "Waiting conversations retrieved successfully.", data = conversations });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while fetching waiting conversations.");
+                logger.LogError(ex, "Error while retrieving waiting conversations.");
                 return StatusCode(500, new { message = "Error while retrieving waiting conversations." });
             }
         }
 
-        // ✅ 6. API Mark message as read
+        // 6. Mark message as read
         [HttpPost("messages/{messageId}/read")]
         public async Task<IActionResult> MarkMessageAsRead(int messageId)
         {
             try
             {
-                _logger.LogInformation("Marking message ID {MessageId} as read.", messageId);
+                logger.LogInformation("Marking message {MessageId} as read.", messageId);
 
-                var response = await _chatService.MarkMessageAsReadAsync(messageId);
-                if (!response.Success) return BadRequest(new { message = response.Message });
+                var response = await chatService.MarkMessageAsReadAsync(messageId);
+                if (!response.Success)
+                    return BadRequest(new { message = response.Message });
 
                 return Ok(new { message = response.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while marking message ID {MessageId} as read.", messageId);
-                return StatusCode(500, new { message = "Error while marking the message as read." });
+                logger.LogError(ex, "Error while marking message {MessageId} as read.", messageId);
+                return StatusCode(500, new { message = "Error while marking message as read." });
             }
         }
     }

@@ -2,30 +2,35 @@
 using Microsoft.AspNetCore.Mvc;
 using SPSS.Service.Dto.Request;
 using SPSS.Service.Dto.Response;
-using SPSS.Service.Services.BrandService;
 using SPSS.Service.Services.CategoryService;
 
 namespace SPSS.API.Controllers
 {
     [Route("categories")]
     [ApiController]
-    public class CategoryController(ICategoryService _categoryService, IMapper _mapper) : ControllerBase
+    public class CategoriesController(ICategoryService categoryService, IMapper mapper) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetCategoryList()
+        public async Task<IActionResult> GetAllCategories()
         {
             try
             {
-                var listCategory = await _categoryService.GetAllAsync();
-                if (listCategory == null)
+                var categories = await categoryService.GetAllAsync();
+                if (categories == null || !categories.Any())
                 {
                     return NotFound(new { message = "No categories found." });
                 }
-                return Ok(listCategory);
+
+                var categoryResponses = mapper.Map<IEnumerable<CategoryResponse>>(categories);
+                return Ok(categoryResponses);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving categories.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving categories.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -34,38 +39,47 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                var category = await _categoryService.GetByIdAsync(id);
+                var category = await categoryService.GetByIdAsync(id);
                 if (category == null)
                 {
                     return NotFound(new { message = "Category not found." });
                 }
 
-                var categoryResponse = _mapper.Map<CategoryResponse>(category);
+                var categoryResponse = mapper.Map<CategoryResponse>(category);
                 return Ok(categoryResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the category.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving the category.",
+                    error = ex.Message
+                });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, CategoryRequest categoryRequest)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryRequest categoryRequest)
         {
             try
             {
-                var category = await _categoryService.GetByIdAsync(id);
+                var category = await categoryService.GetByIdAsync(id);
                 if (category == null)
                 {
                     return NotFound(new { message = "Category not found." });
                 }
-                _mapper.Map(categoryRequest, category);
-                await _categoryService.UpdateAsync(id, category);
-                return Ok("Update successfully!");
+
+                mapper.Map(categoryRequest, category);
+                await categoryService.UpdateAsync(id, category);
+                return Ok(new { message = "Category updated successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the category.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while updating the category.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -74,17 +88,22 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                var category = await _categoryService.GetByIdAsync(id);
+                var category = await categoryService.GetByIdAsync(id);
                 if (category == null)
                 {
                     return NotFound(new { message = "Category not found." });
                 }
-                await _categoryService.DeleteAsync(id);
-                return Ok("Delete successfully!");
+
+                await categoryService.DeleteAsync(id);
+                return Ok(new { message = "Category deleted successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the category.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while deleting the category.",
+                    error = ex.Message
+                });
             }
         }
     }
