@@ -11,25 +11,29 @@ namespace SPSS.API.Controllers
 {
     [Route("brands")]
     [ApiController]
-    public class BrandController(IBrandService _brandService, IMapper _mapper) : ControllerBase
+    public class BrandsController(IBrandService brandService, IMapper mapper) : ControllerBase
     {
-
-
         [HttpGet]
-        public async Task<IActionResult> GetBrandList()
+        public async Task<IActionResult> GetAllBrands()
         {
             try
             {
-                var listBrand = await _brandService.GetAllAsync();
-                if (listBrand == null)
+                var brands = await brandService.GetAllAsync();
+                if (brands == null || !brands.Any())
                 {
                     return NotFound(new { message = "No brands found." });
                 }
-                return Ok(listBrand);
+
+                var brandResponses = mapper.Map<IEnumerable<BrandResponse>>(brands);
+                return Ok(brandResponses);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving brands.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving brands.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -38,58 +42,71 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                var brand = await _brandService.GetByIdAsync(id);
+                var brand = await brandService.GetByIdAsync(id);
                 if (brand == null)
                 {
                     return NotFound(new { message = "Brand not found." });
                 }
 
-                var brandResponse = _mapper.Map<BrandResponse>(brand);
+                var brandResponse = mapper.Map<BrandResponse>(brand);
                 return Ok(brandResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the brand.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving the brand.",
+                    error = ex.Message
+                });
             }
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> SearchName(string name)
+        public async Task<IActionResult> SearchBrandByName([FromQuery] string name)
         {
             try
             {
-                var brand = await _brandService.GetByNameAsync(name);
+                var brand = await brandService.GetByNameAsync(name);
                 if (brand == null)
                 {
                     return NotFound(new { message = "Brand not found." });
                 }
 
-                var brandResponse = _mapper.Map<BrandResponse>(brand);
+                var brandResponse = mapper.Map<BrandResponse>(brand);
                 return Ok(brandResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the brand.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving the brand.",
+                    error = ex.Message
+                });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBrand(int id, BrandRequest brandRequest)
+        public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandRequest brandRequest)
         {
             try
             {
-                var brand = await _brandService.GetByIdAsync(id);
-                if (brand == null)
+                var existingBrand = await brandService.GetByIdAsync(id);
+                if (existingBrand == null)
                 {
                     return NotFound(new { message = "Brand not found." });
                 }
-                _mapper.Map(brandRequest, brand);
-                await _brandService.UpdateAsync(id, brand);
-                return Ok("Update successfully!");
+
+                mapper.Map(brandRequest, existingBrand);
+                await brandService.UpdateAsync(id, existingBrand);
+                return Ok(new { message = "Brand updated successfully!" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the brand.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while updating the brand.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -98,17 +115,22 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                var brand = await _brandService.GetByIdAsync(id);
+                var brand = await brandService.GetByIdAsync(id);
                 if (brand == null)
                 {
                     return NotFound(new { message = "Brand not found." });
                 }
-                await _brandService.DeleteAsync(id);
-                return Ok("Delete successfully!");
+
+                await brandService.DeleteAsync(id);
+                return Ok(new { message = "Brand deleted successfully!" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving the brand.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while deleting the brand.",
+                    error = ex.Message
+                });
             }
         }
     }

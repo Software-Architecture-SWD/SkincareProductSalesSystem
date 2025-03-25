@@ -16,7 +16,7 @@ namespace SPSS.Entities
         public int BlogCategoryId { get; set; }
 
         [Required]
-        [MaxLength(155)]
+        [MaxLength(250)]
         public string Title { get; set; } = string.Empty;
 
         [Required]

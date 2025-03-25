@@ -1,54 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SPSS.Service.Services.VNPayService;
-using VNPAY.NET.Enums;
-using VNPAY.NET.Models;
 using VNPAY.NET.Utilities;
 
 namespace SPSS.API.Controllers
 {
     [Route("payments")]
     [ApiController]
-    public class PaymentController(IVNPayService _vnPayService) : ControllerBase
+    public class PaymentsController : ControllerBase
     {
+        private readonly IVNPayService vnPayService;
+
+        public PaymentsController(IVNPayService vnPayService)
+        {
+            this.vnPayService = vnPayService;
+        }
+
+        /// <summary>
+        /// Tạo URL thanh toán VNPay
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description, int orderId)
+
         {
             try
             {
                 var ipAddress = NetworkHelper.GetIpAddress(HttpContext);
-                var paymentUrl = await _vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, orderId);
-                return Created(paymentUrl, paymentUrl);
+                var paymentUrl = await vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, paymentId);
+                return Created(paymentUrl, new { message = "Payment URL created successfully.", data = paymentUrl });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = "Failed to create payment URL.", error = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Xử lý IPN từ VNPay (gửi từ server VNPay)
+        /// </summary>
         [HttpGet("result")]
-        public async Task<ActionResult> IpnAction()
+        public IActionResult ProcessIpnResult()
         {
             if (!Request.QueryString.HasValue)
             {
                 return NotFound("Không tìm thấy thông tin thanh toán.");
+
             }
 
             try
             {
-                var paymentResult = _vnPayService.ProcessIpnAction(Request.Query);
-               
+                var paymentResult = vnPayService.ProcessIpnAction(Request.Query);
+
+
                 if (paymentResult.IsCompleted)
                 {
-                    return Ok(paymentResult);
+                    return Ok(new { message = "Payment successful.", data = paymentResult });
                 }
 
-                return BadRequest("Thanh toán thất bại");
+                return BadRequest(new { message = "Thanh toán thất bại.", data = paymentResult });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Lỗi xử lý thanh toán.");
+                return StatusCode(500, new { message = "Lỗi xử lý thanh toán.", error = ex.Message });
             }
         }
+
 
         //[HttpGet("results")]
         //public async Task<ActionResult<string>> Callback()
@@ -69,8 +84,6 @@ namespace SPSS.API.Controllers
         //        return StatusCode(500, ex.Message);
         //    }
         //}
-
-
 
     }
 }

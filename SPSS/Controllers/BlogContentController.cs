@@ -9,68 +9,89 @@ namespace SPSS.API.Controllers
 {
     [Route("blog-contents")]
     [ApiController]
-    public class BlogContentController(IMapper _mapper, IBlogContentService _blogContentService) : ControllerBase
+    public class BlogContentsController(IMapper mapper, IBlogContentService blogContentService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllBlogContents()
         {
             try
             {
-                var blogContents = await _blogContentService.GetAllAsync();
+                var blogContents = await blogContentService.GetAllAsync();
                 if (!blogContents.Any())
                 {
                     return NotFound(new { message = "No blog contents found." });
                 }
-                var blogContentResponses = _mapper.Map<IEnumerable<BlogContentResponse>>(blogContents);
+
+                var blogContentResponses = mapper.Map<IEnumerable<BlogContentResponse>>(blogContents);
                 return Ok(blogContentResponses);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving blog contents.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving blog contents.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] BlogContentRequest blogContentRequest)
+        public async Task<IActionResult> CreateBlogContent([FromForm] BlogContentRequest blogContentRequest)
         {
             try
             {
-                var blogContent = _mapper.Map<BlogContent>(blogContentRequest);
-                await _blogContentService.AddAsync(blogContent);
-                var blogContentResponse = _mapper.Map<BlogContentResponse>(blogContent);
+                var blogContent = mapper.Map<BlogContent>(blogContentRequest);
+                await blogContentService.AddAsync(blogContent);
+                var blogContentResponse = mapper.Map<BlogContentResponse>(blogContent);
                 return Ok(blogContentResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while creating the blog content.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while creating the blog content.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] BlogContentRequest blogContentRequest)
+        public async Task<IActionResult> UpdateBlogContent(int id, [FromForm] BlogContentRequest blogContentRequest)
         {
             try
             {
-                var blogContent = _mapper.Map<BlogContent>(blogContentRequest);
+                var blogContent = mapper.Map<BlogContent>(blogContentRequest);
                 blogContent.Id = id;
-                await _blogContentService.UpdateAsync(blogContent);
-                var blogContentResponse = _mapper.Map<BlogContentResponse>(blogContent);
+
+                await blogContentService.UpdateAsync(blogContent);
+                var blogContentResponse = mapper.Map<BlogContentResponse>(blogContent);
                 return Ok(blogContentResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while updating the blog content.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while updating the blog content.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> SoftDelete(int id)
+        public async Task<IActionResult> DeleteBlogContent(int id)
         {
             try
             {
-                await _blogContentService.DeleteAsync(id);
+                await blogContentService.DeleteAsync(id);
                 return Ok(new { message = "Blog content deleted successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while deleting the blog content.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while deleting the blog content.",
+                    error = ex.Message
+                });
             }
         }
     }

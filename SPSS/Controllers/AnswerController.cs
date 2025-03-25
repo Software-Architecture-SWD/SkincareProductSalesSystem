@@ -9,52 +9,73 @@ namespace SPSS.API.Controllers
 {
     [Route("answers")]
     [ApiController]
-    public class AnswerController(IMapper _mapper, IAnswerService _answerService) : ControllerBase
+    public class AnswersController(IMapper mapper, IAnswerService answerService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] AnswerRequest answerRequest)
+        public async Task<IActionResult> CreateAnswer([FromForm] AnswerRequest answerRequest)
         {
             try
             {
-                var answer = _mapper.Map<Answer>(answerRequest);
-                await _answerService.AddAsync(answer);
-                var answerResponse = _mapper.Map<AnswerResponse>(answer);
+                var answer = mapper.Map<Answer>(answerRequest);
+                await answerService.AddAsync(answer);
+                var answerResponse = mapper.Map<AnswerResponse>(answer);
                 return Ok(answerResponse);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while creating the answer.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while creating the answer.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetPagedAnswers(int page = 1, int pageSize = 10)
         {
             try
             {
-                var (answers, totalCount) = await _answerService.GetPagedAnswersAsync(page, pageSize);
+                var (answers, totalCount) = await answerService.GetPagedAnswersAsync(page, pageSize);
                 if (!answers.Any())
                 {
                     return NotFound(new { message = "No answers found." });
                 }
-                var answerResponses = _mapper.Map<IEnumerable<AnswerResponse>>(answers);
-                return Ok(new { answerResponses, totalCount, page, pageSize });
+
+                var answerResponses = mapper.Map<IEnumerable<AnswerResponse>>(answers);
+                return Ok(new
+                {
+                    answerResponses,
+                    totalCount,
+                    page,
+                    pageSize
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while retrieving answers.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while retrieving answers.",
+                    error = ex.Message
+                });
             }
         }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> SoftDeleteAnswer(int id)
+        public async Task<IActionResult> DeleteAnswer(int id)
         {
             try
             {
-                await _answerService.SoftDeleteAsync(id);
-                return Ok(new { message = "Answer soft-deleted successfully." });
+                await answerService.SoftDeleteAsync(id);
+                return Ok(new { message = "Answer deleted successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while soft-deleting the answer.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while deleting the answer.",
+                    error = ex.Message
+                });
             }
         }
 
@@ -63,12 +84,16 @@ namespace SPSS.API.Controllers
         {
             try
             {
-                await _answerService.RestoreAsync(id);
+                await answerService.RestoreAsync(id);
                 return Ok(new { message = "Answer restored successfully." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred while restoring the answer.", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while restoring the answer.",
+                    error = ex.Message
+                });
             }
         }
     }
