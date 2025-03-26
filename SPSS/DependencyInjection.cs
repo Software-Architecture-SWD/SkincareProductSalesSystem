@@ -50,6 +50,7 @@ using SPSS.Repository.Repositories.BlogRepository;
 using SPSS.Service.Services.BlogService;
 using SPSS.Repository.Repositories.BlogContentRepository;
 using SPSS.Service.Services.BlogContentService;
+using SPSS.Service.Services.PaymentService;
 namespace SPSS
 {
     public static class DependencyInjection
@@ -102,6 +103,7 @@ namespace SPSS
             services.AddScoped<IBlogCategoryService, BlogCategoryService>();
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IBlogContentService, BlogContentService>();
+            services.AddScoped<IPaymentService, PaymentService>();
             //Cart
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartService, CartService>();
