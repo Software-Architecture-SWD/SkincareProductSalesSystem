@@ -19,7 +19,8 @@ namespace SPSS.API.Controllers
         /// Tạo URL thanh toán VNPay
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> CreatePaymentUrl([FromQuery] double moneyToPay, [FromQuery] string description, [FromQuery] int paymentId)
+        public async Task<ActionResult<string>> CreatePaymentUrl(double moneyToPay, string description, int orderId)
+
         {
             try
             {
@@ -41,12 +42,14 @@ namespace SPSS.API.Controllers
         {
             if (!Request.QueryString.HasValue)
             {
-                return NotFound(new { message = "Không tìm thấy thông tin thanh toán." });
+                return NotFound("Không tìm thấy thông tin thanh toán.");
+
             }
 
             try
             {
                 var paymentResult = vnPayService.ProcessIpnAction(Request.Query);
+
 
                 if (paymentResult.IsCompleted)
                 {
@@ -61,26 +64,26 @@ namespace SPSS.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Callback từ VNPay sau khi thanh toán (trả về trình duyệt người dùng)
-        /// </summary>
-        [HttpGet("results")]
-        public async Task<IActionResult> ProcessPaymentCallback()
-        {
-            if (!Request.QueryString.HasValue)
-            {
-                return NotFound(new { message = "Không tìm thấy thông tin thanh toán." });
-            }
 
-            try
-            {
-                var resultDescription = await vnPayService.ProcessPaymentCallback(Request.Query);
-                return Ok(new { message = "Payment callback handled successfully.", data = resultDescription });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi xử lý callback.", error = ex.Message });
-            }
-        }
+        //[HttpGet("results")]
+        //public async Task<ActionResult<string>> Callback()
+        //{
+
+        //    if (!Request.QueryString.HasValue)
+        //    {
+        //        return NotFound("Không tìm thấy thông tin thanh toán.");
+        //    }
+
+        //    try
+        //    {
+        //        var resultDescription = await _vnPayService.ProcessPaymentCallback(Request.Query);
+        //        return Ok(resultDescription);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
+
     }
 }
