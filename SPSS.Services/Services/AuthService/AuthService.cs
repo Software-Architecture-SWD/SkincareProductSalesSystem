@@ -257,6 +257,12 @@ namespace SPSS.Service.Services.AuthService
         new Claim("EmailConfirmed", user.EmailConfirmed.ToString())
     };
 
+            var roles = _userManager.GetRolesAsync(user).Result;
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var secretKey = _configuration["AppSettings:Token"];
             if (string.IsNullOrEmpty(secretKey))
                 throw new Exception("JWT Secret Key is missing in appsettings.json.");
@@ -274,6 +280,7 @@ namespace SPSS.Service.Services.AuthService
 
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
+
 
         private string GenerateRefreshToken()
         {
