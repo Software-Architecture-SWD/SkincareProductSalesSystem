@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SPSS.Entities;
 using SPSS.Repository.Enum;
 using SPSS.Repository.UnitOfWork;
+using SPSS.Service.Dto.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +26,15 @@ namespace SPSS.Service.Services.VNPayService
         private readonly IConfiguration _configuration;
         private readonly ILogger<VNPayService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        private readonly IMapper _mapper;
+        public VNPayService(IVnpay vnpay, IConfiguration configuration, ILogger<VNPayService> logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _vnpay = vnpay;
             _configuration = configuration;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
 
             _vnpay.Initialize(_configuration["Vnpay:TmnCode"], _configuration["Vnpay:HashSecret"], _configuration["Vnpay:BaseUrl"], _configuration["Vnpay:CallbackUrl"]);
         }
@@ -69,7 +73,7 @@ namespace SPSS.Service.Services.VNPayService
             }
         }
 
-        public async Task<PaymentResult> ProcessIpnAction(IQueryCollection query)
+        public async Task<PaymentResultResponse> ProcessIpnAction(IQueryCollection query)
         {
             if (query.Count == 0)
             {
@@ -83,6 +87,13 @@ namespace SPSS.Service.Services.VNPayService
                 var orderId = _httpContextAccessor.HttpContext?.Session.GetInt32("OrderId")??0;
                 var order = await _unitOfWork.Orders.GetByIdAsync(orderId);
                 //var payment = await _unitOfWork.Payments.GetPaymentByOrderIdAsync(orderId);
+                var orderResponse = _mapper.Map<OrderResponse>(order);
+
+                var paymentResultResponse = new PaymentResultResponse
+                {
+                    PaymentResult = paymentResult,
+                    Order = orderResponse
+                };
 
                 if (paymentResult.IsSuccess)
                 {
@@ -110,7 +121,7 @@ namespace SPSS.Service.Services.VNPayService
 
                 }
 
-                return paymentResult;
+                return paymentResultResponse;
 
             }
             catch (Exception ex)

@@ -3,6 +3,9 @@
     public class ProductResponse
     {
         public int Id { get; set; }
+
+        public string BrandName { get; set; } = string.Empty;
+        public string CategoryName { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public decimal OriginalPrice { get; set; }

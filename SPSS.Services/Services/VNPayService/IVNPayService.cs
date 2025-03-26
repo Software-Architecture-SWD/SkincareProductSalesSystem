@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SPSS.Service.Dto.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SPSS.Service.Services.VNPayService
     public interface IVNPayService
     {
         Task<string> CreatePaymentUrl(double moneyToPay, string description, string ipAddress, int orderId);
-        Task<PaymentResult> ProcessIpnAction(IQueryCollection query);
+        Task<PaymentResultResponse> ProcessIpnAction(IQueryCollection query);
         Task<string> ProcessPaymentCallback(IQueryCollection query);
     }
 }
