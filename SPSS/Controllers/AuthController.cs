@@ -114,6 +114,39 @@ namespace SPSS.Controllers
                 return BadRequest(new { message = "Google login failed.", details = ex.Message });
             }
         }
+        [HttpPut("roles/assign")]
+        public async Task<IActionResult> AssignRole([FromBody] SetRoleRequestDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Role))
+                return BadRequest(new { Error = "Username and role cannot be empty." });
+
+            try
+            {
+                var result = await authService.AssignRoleToUserAsync(request.Username, request.Role);
+                return Ok(new { Message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+            }
+        }
+
+        [HttpPost("roles")]
+        public async Task<IActionResult> AddRole([FromBody] string roleName)
+        {
+            if (string.IsNullOrWhiteSpace(roleName))
+                return BadRequest(new { Error = "Role name cannot be empty." });
+
+            try
+            {
+                var result = await authService.AddRoleAsync(roleName);
+                return Ok(new { Message = result });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = "An unexpected error occurred.", Details = ex.Message });
+            }
+        }
 
         [HttpPost("google/set-password")]
         public async Task<IActionResult> GoogleSetPassword([FromBody] SetPasswordDTO setPasswordDTO, [FromHeader(Name = "Authorization")] string authorizationHeader)
