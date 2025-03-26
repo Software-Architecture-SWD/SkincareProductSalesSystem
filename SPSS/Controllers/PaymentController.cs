@@ -25,7 +25,7 @@ namespace SPSS.API.Controllers
             try
             {
                 var ipAddress = NetworkHelper.GetIpAddress(HttpContext);
-                var paymentUrl = await vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, paymentId);
+                var paymentUrl = await vnPayService.CreatePaymentUrl(moneyToPay, description, ipAddress, orderId);
                 return Created(paymentUrl, new { message = "Payment URL created successfully.", data = paymentUrl });
             }
             catch (Exception ex)
